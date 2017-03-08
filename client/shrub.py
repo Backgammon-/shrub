@@ -1,1 +1,0 @@
-"""The Shrub client application."""
