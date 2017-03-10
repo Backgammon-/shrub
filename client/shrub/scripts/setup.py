@@ -9,6 +9,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Click',
+        'Paramiko'
     ],
     entry_points='''
         [console_scripts]
