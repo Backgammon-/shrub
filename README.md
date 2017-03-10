@@ -26,3 +26,6 @@ GitHub credentials stored for them.
                     └── __init__.py
 
                     4 directories, 5 files
+
+# Dependencies
+- pysqlcipher3 (https://github.com/rigglemania/pysqlcipher3)
