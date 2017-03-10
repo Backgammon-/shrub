@@ -21,3 +21,16 @@ class GithubAPI:
         pass;
 
     # def get_issue_comments, etc.
+    def get_issue_comments():
+        """
+            List comments on a specified issue.
+        """
+        pass;
+
+    def create_issue_comment():
+        """
+            Creates a new comment on a specified issue.
+        """
+        pass;
+
+    
