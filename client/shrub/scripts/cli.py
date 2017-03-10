@@ -22,8 +22,10 @@ def cli():
               type=click.Path(exists=True))
 @click.option('--insecure', is_flag=True)
 @click.command()
-def register(username, key_path):
+def register(username, key_path, insecure):
     """Register a new GitHub user with the Shrub server."""
+    if insecure:
+        click.echo('Warning: using insecure code paths.')
     click.echo("This command should register a user with username '{}' "
                "and ssh key '{}'".format(username, key_path))
 
@@ -33,11 +35,14 @@ def register(username, key_path):
               type=click.Path(exists=True))
 @click.option('--insecure', is_flag=True)
 @click.command()
-def validate(connection_string, key_path):
+def validate(connection_string, key_path, insecure):
     """
         Attempt to connect to a Shrub server and print a message
         detailing success or failure.
     """
+    if insecure:
+        click.echo('Warning: using insecure code paths.')
+
     click.echo("Attempting to connect to '{}' with key '{}'".format(
                connection_string, key_path))
 
@@ -68,10 +73,6 @@ def validate(connection_string, key_path):
         click.echo('Wrong password, exiting.')
 
     stdin, stdout, stderr = client.exec_command('ls -l')
-
-    stdin, stdout, stderr = client.exec_command('shrubbery register
-            {}'.format(username))
-
     output = stdout.read()
     client.close()
 
