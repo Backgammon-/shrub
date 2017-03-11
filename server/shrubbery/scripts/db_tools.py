@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pysqlcipher import dbapi2 as sqlite
+from pysqlcipher3 import dbapi2 as sqlite
 import bcrypt
 
 def insert_user_info(username, password, githubKey):
