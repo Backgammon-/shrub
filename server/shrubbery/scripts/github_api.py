@@ -9,11 +9,19 @@ class GithubAPI:
             authorization.
         """
         # https://developer.github.com/v3/oauth_authorizations/#create-a-new-authorization
-
+        # Parameters:
+        # - note:   Required. The identifier for the oauth token. Another token
+        #           with the same note must not already exist.
+        # - scopes: Limits access level of the token. "repo" is read-write
+        #           access to public and private
         parameters = {"note": note, "scopes": ["repo"]}
+
+        # Basic authentication is defined in RFC2617; the username/password is
+        # "username:password" encoded in base64.
         creds = "{}:{}".format(username, password)
         base64_creds = base64.b64encode(creds.encode("ascii")).decode()
         header = {"Authorization": "Basic {}".format(base64_creds)}
+
         response = requests.post("https://api.github.com/authorizations", json=parameters, headers=header)
         return response.json().get("token")
 
@@ -68,4 +76,4 @@ class GithubAPI:
         """
         pass;
 
-    
+
