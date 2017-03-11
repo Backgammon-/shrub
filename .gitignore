@@ -90,3 +90,6 @@ ENV/
 
 # Shrub-specific files
 server/shrub.db
+
+# VS Code files
+.vscode/
