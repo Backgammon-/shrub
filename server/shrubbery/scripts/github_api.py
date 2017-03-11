@@ -3,7 +3,7 @@ import requests
 import base64
 
 class GithubAPI:
-    def get_oauth_token(username, password, note):
+    def get_oauth_token(self, username, password, note):
         """
             Given the user's Github username/password, get a new OAuth
             authorization.
@@ -25,14 +25,17 @@ class GithubAPI:
         response = requests.post("https://api.github.com/authorizations", json=parameters, headers=header)
         return response.json().get("token")
 
-    def get_repos():
+    def get_repos(self, token):
         """
             List accessible repositories for the authenticated user.
         """
         # https://developer.github.com/v3/repos://developer.github.com/v3/repos/
-        pass;
+        header = {'Authorization' : 'token %s' % token}
 
-    def get_repo_issues():
+        response = requests.get("https://api.github.com/user/repos", headers=header)
+        return response.json()
+
+    def get_repo_issues(self, token):
         """
             List issues for a repository.
         """
@@ -40,14 +43,14 @@ class GithubAPI:
         # https://developer.github.com/v3/issues/#list-issues-for-a-repository
         pass;
 
-    def create_issue():
+    def create_issue(self, token):
         """
             Create an issue in a repository.
         """
         # https://developer.github.com/v3/issues/#create-an-issue
         pass;
 
-    def edit_issue():
+    def edit_issue(self, token):
         """
             Edit an issue.
         """
@@ -55,28 +58,28 @@ class GithubAPI:
         pass;
 
     # def get_issue_comments, etc.
-    def get_issue_comments():
+    def get_issue_comments(self, token):
         """
             List comments on a specified issue.
         """
         # https://developer.github.com/v3/issues/comments/#list-comments-on-an-issue
         pass;
 
-    def create_issue_comment():
+    def create_issue_comment(self, token):
         """
             Creates a new comment on a specified issue.
         """
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         pass;
 
-    def edit_issue_comment():
+    def edit_issue_comment(self, token):
         """
             Edits an existing comment on a specified issue.
         """
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         pass;
 
-    def delete_issue_comment():
+    def delete_issue_comment(self, token):
         """
             Deletes an existing comment on a specified issue.
         """
