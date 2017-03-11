@@ -1,5 +1,6 @@
 """The Shrub command-line interface."""
 
+
 from getpass import getuser, getpass
 from os.path import expanduser
 
@@ -17,6 +18,7 @@ def cli():
     pass
 
 
+##### REGISTER #########################################################
 @click.argument('username')
 @click.option('--key-path', default=expanduser('~/.ssh/id_rsa'),
               type=click.Path(exists=True))
@@ -30,6 +32,7 @@ def register(username, key_path, insecure):
                "and ssh key '{}'".format(username, key_path))
 
 
+##### VALIDATE #########################################################
 @click.argument('connection_string', default=CONNECTION_STRING)
 @click.option('--key-path', default=expanduser('~/.ssh/id_rsa'),
               type=click.Path(exists=True))
@@ -79,9 +82,6 @@ def validate(connection_string, key_path, insecure):
     if stdin or stdout or stderr:
         click.echo('Successfully connected, but Shrub does not give '
                    'interactive access.')
-
-        # TODO: This is temp, remove soon.
-        click.echo('P.S. output was\n\n: {}'.format(output))
         return 0
     else:
         click.echo('Error: could not connect')
@@ -90,8 +90,59 @@ def validate(connection_string, key_path, insecure):
     return 1
 
 
-def create_client(username, hostname, keyname):
-    """Utility function to return an open SSHClient instance."""
+##### SHOW GROUP #######################################################
+@click.group()
+def show():
+    """List repositories, issues, pull requests, etc."""
+    pass
+
+
+@click.command()
+def repos():
+    """List all repos a user has."""
+    click.echo('Listing repos.')
+
+
+@click.command()
+def issues():
+    """List all issues in a repository."""
+    click.echo('Listing issues.')
+
+
+@click.command()
+def comments():
+    """List all comments on an issue or pull request."""
+    click.echo('Showing comments.')
+
+
+##### CREATE GROUP #######################################################
+@click.group()
+def create():
+    """Create repositories, issues, pull requests, etc."""
+    pass
+
+
+@click.command()
+def issue():
+    """Create an issue."""
+    click.echo('Creating an issue')
+
+
+@click.command()
+def comment():
+    """Create a comment on an issue or pull request."""
+    click.echo('Creating a comment.')
+
+
+##### SETUP GROUPS #####################################################
+show.add_command(repos)
+show.add_command(issues)
+show.add_command(comments)
+
+create.add_command(issue)
+create.add_command(comment)
 
 cli.add_command(register)
 cli.add_command(validate)
+cli.add_command(show)
+cli.add_command(create)
