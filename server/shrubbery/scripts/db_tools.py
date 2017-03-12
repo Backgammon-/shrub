@@ -131,8 +131,12 @@ def username_exists(username):
 # Run Tests
 def run_tests():
     print('Testing success cases')
+    print(enc_pass('pass') == enc_pass('pass'))
+
     print(insert_user_info_key('tess1','pa$$','abc'))
     print(insert_user_info('tess2','o.o'))
+
+    print((retrieve_githubKey('tess1','pa$$') == 'abc'))
     print((retrieve_githubKey('tess2','o.o') == ''))
 
     print(change_githubKey('tess1','pa$$','def'))
