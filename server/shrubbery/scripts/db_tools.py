@@ -98,7 +98,7 @@ def check_password(username, password):
     if not (username_exists(username)):
         return False
 
-    sql = "SELECT username FROM Users WHERE username = '{}' and passhash = '{}'".format(username, enc_pass(password))
+    sql = "SELECT passhash FROM Users WHERE username = '{}'".format(username)
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -107,7 +107,7 @@ def check_password(username, password):
     data = c.fetchall()
     conn.close()
 
-    if len(data) > 0:
+    if len(data) > 0 and bcrypt.hashpw(password,data[0]) == data:
         return True
     else:
         return False
