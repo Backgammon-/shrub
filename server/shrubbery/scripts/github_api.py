@@ -68,8 +68,7 @@ def edit_issue(auth_token):
     # https://developer.github.com/v3/issues/#edit-an-issue
     pass;
 
-# def get_issue_comments, etc.
-def get_issue(auth_token, repo, issue_number):
+def get_issue_comments(auth_token, repo, issue_number):
     """
         List comments on a specified issue.
     """
