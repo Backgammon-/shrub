@@ -72,7 +72,7 @@ def retrieve_githubKey(username, password):
     if not (check_password(username, password)):
         return ''
     
-    sql = "SELECT github_key FROM Users WHERE username = '{}' and passhash = '{}'".format(username, enc_pass(password))
+    sql = "SELECT passhash, github_key FROM Users WHERE username = '{}'".format(username)
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -81,10 +81,10 @@ def retrieve_githubKey(username, password):
     data=c.fetchall()
     conn.close()
 
-    if len(data) != 1:
-        return ''
+    if len(data) == 1 and compare_crypt(data[0][0],password):
+        return data[0][1]
     else:
-        return data[0]
+        return ''
 
 # Helper Methods
 
