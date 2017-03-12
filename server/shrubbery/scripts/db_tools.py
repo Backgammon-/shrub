@@ -141,3 +141,5 @@ def run_tests():
     print(change_githubKey('tess3','anything','anything'))
     print((not retrieve_githubKey('tess2','anything') == ''))
     print((not retrieve_githubKey('tess3','') == ''))
+
+run_tests()
