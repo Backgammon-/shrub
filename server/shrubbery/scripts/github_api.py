@@ -48,6 +48,7 @@ def get_repo_issues(auth_token, username, repo):
     """
         List issues for a repository.
     """
+    # Repo is "owner/repo" e.g. "rigglemania/pysqlcipher3"
     # Remember to check the has_issues bool on the repo
     # https://developer.github.com/v3/issues/#list-issues-for-a-repository
     response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
@@ -129,7 +130,7 @@ def delete_issue_comment(auth_token, username, repo, comment_id):
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
     response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
                             headers=auth_header(auth_token))
-    
+
     return response.json()
 
 ##### HELPERS ##############################################################
