@@ -83,7 +83,7 @@ def retrieve_githubKey(username, password):
     data=c.fetchall()
     conn.close()
 
-    if len(data) == 1 and compare_crypt(data[0][0],password):
+    if len(data) == 1 and len(data[0]) > 1 and len(data[0][1]) > 0 and compare_crypt(data[0][0],password):
         return data[0][1]
     else:
         return ''
