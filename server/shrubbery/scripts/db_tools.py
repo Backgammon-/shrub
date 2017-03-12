@@ -5,7 +5,7 @@ import bcrypt
 # Inserts row in database, if username doesn't already exist
 # Returns false if username exists
 # Returns true if row was inserted
-def insert_user_info(username, password, githubKey):
+def insert_user_info_key(username, password, githubKey):
     if (username_exists(username)):
         return False
 
@@ -14,7 +14,7 @@ def insert_user_info(username, password, githubKey):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute("INSERT INTO Users(username, passhash, github_key) " +
-        "VALUES ('%s','%s','%s')".format(
+        "VALUES ('{}','{}','{}')".format(
             username, enc_pass(password), githubKey))
 
     conn.commit()
@@ -34,7 +34,7 @@ def insert_user_info(username, password):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute("INSERT INTO Users(username, passhash) " +
-        "VALUES ('%s','%s')".format(username, enc_pass(password)))
+        "VALUES ('{}','{}')".format(username, enc_pass(password)))
 
     conn.commit()
     conn.close()
@@ -42,7 +42,7 @@ def insert_user_info(username, password):
     return True
 
 # Updates the github key, given a valid username and password
-# Returns false if the username doesn't exist 
+# Returns false if the username doesn't exist
 def change_githubKey(username, password, githubKey):
     if not (username_exists(username)):
         return False
@@ -50,8 +50,8 @@ def change_githubKey(username, password, githubKey):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("UPDATE Users Set github_key = '%s' "
-        "WHERE username = '%s' and passhash = '%s'".format(
+    c.execute("UPDATE Users Set github_key = '{}' "
+        "WHERE username = '{}' and passhash = '{}'".format(
             githubKey, username, enc_pass(password)))
 
     conn.commit()
@@ -72,9 +72,9 @@ def retrieve_githubKey(username, password):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute(
-        "SELECT github_key FROM Users WHERE username = '%s' and passhash = '%s'"
+        "SELECT github_key FROM Users WHERE username = '{}' and passhash = '{}'"
         .format(username, enc_pass(password)))
-    data=cursor.fetchall()
+    data=c.fetchall()
     conn.close()
 
     if len(data) != 1:
@@ -97,8 +97,8 @@ def check_password(username, password):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("SELECT username FROM Users WHERE username = '%s' and passhash = '%s'".format(username, enc_pass(password)))
-    data = cursor.fetchall()
+    c.execute("SELECT username FROM Users WHERE username = '{}' and passhash = '{}'".format(username, enc_pass(password)))
+    data = c.fetchall()
     conn.close()
 
     if len(data) > 0:
@@ -111,8 +111,8 @@ def username_exists(username):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("SELECT username FROM Users WHERE username = '%s'".format(username))
-    data = cursor.fetchall()
+    c.execute("SELECT username FROM Users WHERE username = '{}'".format(username))
+    data = c.fetchall()
     conn.close()
 
     if len(data) > 0:
