@@ -107,7 +107,7 @@ def check_password(username, password):
     data = c.fetchall()
     conn.close()
 
-    if len(data) > 0 and bcrypt.hashpw(password,data[0]) == data:
+    if len(data) > 0 and len(data[0]) > 0 and enc_pass(password) == data[0][0]:
         return True
     else:
         return False
