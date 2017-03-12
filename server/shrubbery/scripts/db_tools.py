@@ -87,7 +87,7 @@ def retrieve_githubKey(username, password):
 
 # Get encrypted password given plain password
 def enc_pass(password):
-    return bcrypt.hashpw(password,bcrypt.gensalt())
+    return bcrypt.hashpw(str.encode(password),bcrypt.gensalt())
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
