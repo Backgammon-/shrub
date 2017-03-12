@@ -48,54 +48,90 @@ def get_repo_issues(auth_token, username, repo):
     """
         List issues for a repository.
     """
+    # Repo is "owner/repo" e.g. "rigglemania/pysqlcipher3"
     # Remember to check the has_issues bool on the repo
     # https://developer.github.com/v3/issues/#list-issues-for-a-repository
     response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
                             headers=auth_header(auth_token))
     return response.json()
 
-def create_issue(auth_token):
+def create_issue(auth_token, username, repo, issue_title, issue_body):
     """
         Create an issue in a repository.
     """
     # https://developer.github.com/v3/issues/#create-an-issue
-    pass;
+    # Parameters:
+    # title - Required string. The title of the issue.
+    # body - String containing the contents of the issue.
+    parameters = {"title": issue_title, "body": issue_body}
 
-def edit_issue(auth_token):
+    response = requests.post("https://api.github.com/repos/{}/issues".format(repo),
+                            json=parameters,
+                            headers=auth_header(auth_token))
+    return response.json()
+
+def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body):
     """
         Edit an issue.
     """
     # https://developer.github.com/v3/issues/#edit-an-issue
-    pass;
+    # Parameters (not required):
+    # title - String containing the title of the issue.
+    # body - String containing the body of the issue.
+    parameters = {"title": issue_title, "body": issue_body}
 
-# def get_issue_comments, etc.
-def get_issue(auth_token, repo, issue_number):
+    response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
+                            json=parameters,
+                            headers=auth_header(auth_token))
+    return response.json()
+
+def get_issue_comments(auth_token, username, repo, issue_number):
     """
         List comments on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#list-comments-on-an-issue
-    pass;
+    response = requests.get("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+                            headers=auth_header(auth_token))
+    return response.json()
 
-def create_issue_comment(auth_token):
+def create_issue_comment(auth_token, username, repo, issue_number, comment_body):
     """
         Creates a new comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#create-a-comment
-    pass;
+    # Parameters:
+    # body - Required string. The contents of the comment.
+    parameters = {"body": comment_body}
 
-def edit_issue_comment(auth_token):
+    response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+                            json=parameters,
+                            headers=auth_header(auth_token))
+    return response.json()
+
+def edit_issue_comment(auth_token, username, repo, comment_id, comment_body):
     """
         Edits an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#edit-a-comment
-    pass;
+    # Note: Issue Comments are ordered by ascending ID.
+    # Parameters:
+    # body - Reqired string. The contents of the comment.
+    parameters = {"body": comment_body}
 
-def delete_issue_comment(auth_token):
+    response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
+                            json=parameters,
+                            headers=auth_header(auth_token))
+    return response.json()
+
+def delete_issue_comment(auth_token, username, repo, comment_id):
     """
         Deletes an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
-    pass;
+    response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
+                            headers=auth_header(auth_token))
+
+    return response.json()
 
 ##### HELPERS ##############################################################
 def auth_header(auth_token):
