@@ -12,20 +12,41 @@ format these requests and handle authentication for the user, such that
 a user who can SSH authenticate against the Shrub server will have their
 GitHub credentials stored for them.
 
-# Contents
+# Setup and Development
 
-    shrub/
-    ├── README.md
-    ├── client
-    │   ├── shrub.py
-    │   └── shrublib
-    │       └── __init__.py
-    └── server
-        ├── shrubbery.py
-            └── shrubberylib
-                    └── __init__.py
+Shrub is best used on Linux, but the client package can also be
+installed on macOS and Windows relativeley easily.
 
-                    4 directories, 5 files
+Development is best done in a virtual environment, so you will first
+need to install virtualenv on your platform. You can use a single
+virtual environment to develop on both the shrub (client) package and
+the shrubbery (server) package simultaneously.
+
+* Create, activate, and verify your virtual environment in the root of
+  the repository:
+
+    shrub/ $ virtualenv venv --python=python3
+    shrub/ $ source venv/bin/activate
+    (venv) shrub/ $ python --version   # should print out your python3 version
+
+* Now you can use pip to install the two packages in your virtual
+  environment.
+
+  (venv) shrub/ $ pip install client --editable
+  (venv) shrub/ $ pip install server --editable
+
+* This will make available the `shrub` and `shrubbery` executables
+  which can be called as a bare command like any other program:
+
+  (venv) shrub/ $ shrub --help
+  (venv) shurb/ $ shrubbery --help
+
+* When you make a change to these packages, you must rerun the above
+  `pip` commands for them to propagate to the 
 
 # Dependencies
-- pysqlcipher3 (https://github.com/rigglemania/pysqlcipher3)
+
+The shrub server uses SQLite and SQLCipher, both of which must be
+installed on an OS level before the package can be built. These are
+nontrivial to install on Windows/macOS, so it is best to use Linux
+instead.
