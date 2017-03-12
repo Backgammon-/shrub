@@ -48,6 +48,7 @@ def get_repo_issues(auth_token, username, repo):
     """
         List issues for a repository.
     """
+    # Repo is "owner/repo" e.g. "rigglemania/pysqlcipher3"
     # Remember to check the has_issues bool on the repo
     # https://developer.github.com/v3/issues/#list-issues-for-a-repository
     response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
@@ -79,8 +80,8 @@ def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body
     # body - String containing the body of the issue.
     parameters = {"title": issue_title, "body": issue_body}
 
-    reponse = request.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
-                            json=parameters
+    response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
@@ -103,7 +104,7 @@ def create_issue_comment(auth_token, username, repo, issue_number, comment_body)
     parameters = {"body": comment_body}
 
     response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
-                            json=parameters
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
@@ -118,7 +119,7 @@ def edit_issue_comment(auth_token, username, repo, issue_id, comment_body):
     parameters = {"body": comment_body}
 
     response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
-                            json=parameters
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
@@ -129,7 +130,7 @@ def delete_issue_comment(auth_token, username, repo, issue_id):
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
     response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
                             headers=auth_header(auth_token))
-    
+
     return response.json()
 
 ##### HELPERS ##############################################################
