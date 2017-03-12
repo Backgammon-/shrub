@@ -79,8 +79,8 @@ def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body
     # body - String containing the body of the issue.
     parameters = {"title": issue_title, "body": issue_body}
 
-    reponse = request.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
-                            json=parameters
+    response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
@@ -103,11 +103,11 @@ def create_issue_comment(auth_token, username, repo, issue_number, comment_body)
     parameters = {"body": comment_body}
 
     response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
-                            json=parameters
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
-def edit_issue_comment(auth_token, username, repo, issue_id, comment_body):
+def edit_issue_comment(auth_token, username, repo, comment_id, comment_body):
     """
         Edits an existing comment on a specified issue.
     """
@@ -117,17 +117,17 @@ def edit_issue_comment(auth_token, username, repo, issue_id, comment_body):
     # body - Reqired string. The contents of the comment.
     parameters = {"body": comment_body}
 
-    response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
-                            json=parameters
+    response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
+                            json=parameters,
                             headers=auth_header(auth_token))
     return response.json()
 
-def delete_issue_comment(auth_token, username, repo, issue_id):
+def delete_issue_comment(auth_token, username, repo, comment_id):
     """
         Deletes an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
-    response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
+    response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
                             headers=auth_header(auth_token))
     
     return response.json()
