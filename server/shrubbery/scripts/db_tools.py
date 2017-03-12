@@ -2,20 +2,24 @@
 from pysqlcipher3 import dbapi2 as sqlite
 import bcrypt
 
+PRAGMA = "PRAGMA key='FooBarBaz'"
+
 # Inserts row in database, if username doesn't already exist
 # Returns false if username exists
 # Returns true if row was inserted
 def insert_user_info_key(username, password, githubKey):
     if (username_exists(username)):
         return False
+    
+    sql = "INSERT INTO Users(username, passhash, github_key) " +
+        "VALUES ('{0}','{1}','{2}')".format(
+            username, enc_pass(password), githubKey)
 
     # TODO: any other paths we should account for? unsure.
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("INSERT INTO Users(username, passhash, github_key) " +
-        "VALUES ('{0}','{1}','{2}')".format(
-            username, enc_pass(password), githubKey))
+    c.execute(PRAGMA)
+    c.execute(sql)
 
     conn.commit()
     conn.close()
@@ -29,12 +33,14 @@ def insert_user_info_key(username, password, githubKey):
 def insert_user_info(username, password):
     if (username_exists(username)):
         return False
+    
+    sql = "INSERT INTO Users(username, passhash) " +
+        "VALUES ('{0}','{1}')".format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("INSERT INTO Users(username, passhash) " +
-        "VALUES ('{0}','{1}')".format(username, enc_pass(password)))
+    c.execute(PRAGMA)
+    c.execute(sql)
 
     conn.commit()
     conn.close()
@@ -46,13 +52,15 @@ def insert_user_info(username, password):
 def change_githubKey(username, password, githubKey):
     if not (username_exists(username)):
         return False
-
+    
+    sql = "UPDATE Users Set github_key = '{0}' "
+        "WHERE username = '{1}' and passhash = '{2}'".format(
+            githubKey, username, enc_pass(password))
+    
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("UPDATE Users Set github_key = '{0}' "
-        "WHERE username = '{1}' and passhash = '{2}'".format(
-            githubKey, username, enc_pass(password)))
+    c.execute(PRAGMA)
+    c.execute(sql)
 
     conn.commit()
     conn.close()
@@ -68,13 +76,15 @@ def retrieve_githubKey(username, password):
         return ''
     if not (check_password(username, password)):
         return ''
+    
+    sql = "SELECT github_key FROM Users WHERE username = '{0}'" +
+        " and passhash = '{1}'"
+        .format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute(
-        "SELECT github_key FROM Users WHERE username = '{0}' and passhash = '{1}'"
-        .format(username, enc_pass(password)))
+    c.execute(PRAGMA)
+    c.execute(sql)
     data=c.fetchall()
     conn.close()
 
@@ -88,19 +98,21 @@ def retrieve_githubKey(username, password):
 
 # Get encrypted password given plain password
 def enc_pass(password):
-    return bcrypt.hashpw(str.encode(password),bcrypt.gensalt())
+    return bcrypt.hashpw(str.encode(password),bcrypt.gensalt(10))
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
     if not (username_exists(username)):
         return False
 
+    sql = "SELECT username FROM Users WHERE username = '{0}'" +
+        " and passhash = '{1}'"
+        .format(username, enc_pass(password))
+
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute(
-        "SELECT username FROM Users WHERE username = '{0}' and passhash = '{1}'"
-        .format(username, enc_pass(password)))
+    c.execute(PRAGMA)
+    c.execute(sql)
     data = c.fetchall()
     conn.close()
 
@@ -111,11 +123,12 @@ def check_password(username, password):
 
 # Returns true if username exists, otherwise false
 def username_exists(username):
+    sql = "SELECT username FROM Users WHERE username = '{0}'"
+        .format(username)
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("SELECT username FROM Users WHERE username = '{0}'"
-        .format(username))
+    c.execute(PRAGMA)
+    c.execute(sql)
     data = c.fetchall()
     conn.close()
 
