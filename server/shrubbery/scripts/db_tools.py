@@ -93,6 +93,13 @@ def retrieve_githubKey(username, password):
 def enc_pass(password):
     return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10)).decode('ascii')
 
+# Compares hashed string with unencrypted string
+# Returns true if equal
+# False otherwise
+def compare_crypt(plainhash, plaintext):
+    hash = plainhash.encode('ascii')
+    return bcrypt.hashpw(plaintext, hash) == hash
+
 # Return true if password and username match, otherwise false
 def check_password(username, password):
     if not (username_exists(username)):
@@ -107,7 +114,7 @@ def check_password(username, password):
     data = c.fetchall()
     conn.close()
 
-    if len(data) > 0 and len(data[0]) > 0 and enc_pass(password) == data[0][0]:
+    if len(data) > 0 and len(data[0]) > 0 and compare_crypt(data[0][0],password):
         return True
     else:
         return False
