@@ -91,7 +91,7 @@ def retrieve_githubKey(username, password):
 
 # Get encrypted password given plain password
 def enc_pass(password):
-    return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10)).decode('ascii')
+    return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10))
 
 # Compares hashed string with unencrypted string
 # Returns true if equal
@@ -134,7 +134,6 @@ def username_exists(username):
         return True
     else:
         return False
-
 
 # Run Tests
 def run_tests():
