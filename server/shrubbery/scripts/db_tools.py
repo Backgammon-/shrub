@@ -14,7 +14,7 @@ def insert_user_info_key(username, password, githubKey):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute("INSERT INTO Users(username, passhash, github_key) " +
-        "VALUES ('{}','{}','{}')".format(
+        "VALUES ('{0}','{1}','{2}')".format(
             username, enc_pass(password), githubKey))
 
     conn.commit()
@@ -34,7 +34,7 @@ def insert_user_info(username, password):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute("INSERT INTO Users(username, passhash) " +
-        "VALUES ('{}','{}')".format(username, enc_pass(password)))
+        "VALUES ('{0}','{1}')".format(username, enc_pass(password)))
 
     conn.commit()
     conn.close()
@@ -50,8 +50,8 @@ def change_githubKey(username, password, githubKey):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("UPDATE Users Set github_key = '{}' "
-        "WHERE username = '{}' and passhash = '{}'".format(
+    c.execute("UPDATE Users Set github_key = '{0}' "
+        "WHERE username = '{1}' and passhash = '{2}'".format(
             githubKey, username, enc_pass(password)))
 
     conn.commit()
@@ -61,7 +61,8 @@ def change_githubKey(username, password, githubKey):
 
 # Gets the github key for a username and password
 # Returns github key, or empty string if any error occurs
-# Errors include: username doesn't exist, password doesn't match, no github key found
+# Errors include: username doesn't exist, password doesn't match,
+# no github key found
 def retrieve_githubKey(username, password):
     if not (username_exists(username)):
         return ''
@@ -72,7 +73,7 @@ def retrieve_githubKey(username, password):
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
     c.execute(
-        "SELECT github_key FROM Users WHERE username = '{}' and passhash = '{}'"
+        "SELECT github_key FROM Users WHERE username = '{0}' and passhash = '{1}'"
         .format(username, enc_pass(password)))
     data=c.fetchall()
     conn.close()
@@ -97,7 +98,9 @@ def check_password(username, password):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("SELECT username FROM Users WHERE username = '{}' and passhash = '{}'".format(username, enc_pass(password)))
+    c.execute(
+        "SELECT username FROM Users WHERE username = '{0}' and passhash = '{1}'"
+        .format(username, enc_pass(password)))
     data = c.fetchall()
     conn.close()
 
@@ -111,7 +114,8 @@ def username_exists(username):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute("PRAGMA key='FooBarBaz'")
-    c.execute("SELECT username FROM Users WHERE username = '{}'".format(username))
+    c.execute("SELECT username FROM Users WHERE username = '{0}'"
+        .format(username))
     data = c.fetchall()
     conn.close()
 
