@@ -86,12 +86,11 @@ def retrieve_githubKey(username, password):
     else:
         return data[0]
 
-
 # Helper Methods
 
 # Get encrypted password given plain password
 def enc_pass(password):
-    return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10))
+    return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10)).decode('ascii')
 
 # Compares hashed string with unencrypted string
 # Returns true if equal
@@ -99,7 +98,8 @@ def enc_pass(password):
 def compare_crypt(plainhash, plaintext):
     hash = plainhash.encode('ascii')
     text = plaintext.encode('ascii')
-    return bcrypt.hashpw(text, hash) == hash
+    #return bcrypt.hashpw(text, hash) == hash
+    return bcrypt.checkpw(text,plainhash)
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
