@@ -11,9 +11,7 @@ def insert_user_info_key(username, password, githubKey):
     if (username_exists(username)):
         return False
     
-    sql = "INSERT INTO Users(username, passhash, github_key) " +
-        "VALUES ('{0}','{1}','{2}')".format(
-            username, enc_pass(password), githubKey)
+    sql = "INSERT INTO Users(username, passhash, github_key) VALUES ('{0}','{1}','{2}')".format(username, enc_pass(password), githubKey)
 
     # TODO: any other paths we should account for? unsure.
     conn = sqlite.connect('shrub.db')
@@ -34,8 +32,7 @@ def insert_user_info(username, password):
     if (username_exists(username)):
         return False
     
-    sql = "INSERT INTO Users(username, passhash) " +
-        "VALUES ('{0}','{1}')".format(username, enc_pass(password))
+    sql = "INSERT INTO Users(username, passhash) VALUES ('{0}','{1}')".format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -53,9 +50,7 @@ def change_githubKey(username, password, githubKey):
     if not (username_exists(username)):
         return False
     
-    sql = "UPDATE Users Set github_key = '{0}' "
-        "WHERE username = '{1}' and passhash = '{2}'".format(
-            githubKey, username, enc_pass(password))
+    sql = "UPDATE Users Set github_key = '{0}' WHERE username = '{1}' and passhash = '{2}'".format(githubKey, username, enc_pass(password))
     
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -77,8 +72,7 @@ def retrieve_githubKey(username, password):
     if not (check_password(username, password)):
         return ''
     
-    sql = "SELECT github_key FROM Users WHERE username = '{0}'" +
-        " and passhash = '{1}'"
+    sql = "SELECT github_key FROM Users WHERE username = '{0}' and passhash = '{1}'"
         .format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
@@ -105,8 +99,7 @@ def check_password(username, password):
     if not (username_exists(username)):
         return False
 
-    sql = "SELECT username FROM Users WHERE username = '{0}'" +
-        " and passhash = '{1}'"
+    sql = "SELECT username FROM Users WHERE username = '{0}' and passhash = '{1}'"
         .format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
