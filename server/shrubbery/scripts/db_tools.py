@@ -99,7 +99,7 @@ def compare_crypt(plainhash, plaintext):
     hash = plainhash.encode('ascii')
     text = plaintext.encode('ascii')
     #return bcrypt.hashpw(text, hash) == hash
-    return bcrypt.checkpw(text,plainhash)
+    return bcrypt.checkpw(text, hash)
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
