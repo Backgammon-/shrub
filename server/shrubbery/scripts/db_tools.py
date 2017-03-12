@@ -138,7 +138,7 @@ def username_exists(username):
 # Run Tests
 def run_tests():
     print('Testing success cases')
-    print(enc_pass('pass') == enc_pass('pass'))
+    print(enc_pass('pass') == 'pass')
 
     print(insert_user_info_key('tess1','pa$$','abc'))
     print(insert_user_info('tess2','o.o'))
