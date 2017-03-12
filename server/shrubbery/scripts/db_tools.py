@@ -98,7 +98,8 @@ def enc_pass(password):
 # False otherwise
 def compare_crypt(plainhash, plaintext):
     hash = plainhash.encode('ascii')
-    return bcrypt.hashpw(plaintext, hash) == hash
+    text = plaintext.encode('ascii')
+    return bcrypt.hashpw(text, hash) == hash
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
