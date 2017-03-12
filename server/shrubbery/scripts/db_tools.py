@@ -46,21 +46,23 @@ def insert_user_info(username, password):
 
 # Updates the github key, given a valid username and password
 # Returns false if the username doesn't exist
-def change_githubKey(username, password, githubKey):
-    if not (username_exists(username)):
-        return False
-    
-    sql = "UPDATE Users Set github_key = '{}' WHERE username = '{}' and passhash = '{}'".format(githubKey, username, enc_pass(password))
-    
-    conn = sqlite.connect('shrub.db')
-    c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+#def change_githubKey(username, password, githubKey):
+#    if not (username_exists(username)):
+#        return False
 
-    conn.commit()
-    conn.close()
+#    # TODO: if we end up using this function, MUST add password verification
+#    
+#    sql = "UPDATE Users Set github_key = '{}' WHERE username = '{}'".format(githubKey, username)
 
-    return True
+#    conn = sqlite.connect('shrub.db')
+#    c = conn.cursor()
+#    c.execute(PRAGMA)
+#    c.execute(sql)
+
+#    conn.commit()
+#    conn.close()
+
+#    return True
 
 # Gets the github key for a username and password
 # Returns github key, or empty string if any error occurs
@@ -145,18 +147,11 @@ def run_tests():
     print((retrieve_githubKey('tess1','pa$$') == 'abc'))
     print((retrieve_githubKey('tess2','o.o') == ''))
 
-    print(change_githubKey('tess1','pa$$','def'))
-    print(change_githubKey('tess2','o.o','ghi'))
-
-    print((retrieve_githubKey('tess1','pa$$') == 'def'))
-    print((retrieve_githubKey('tess2','o.o') == 'ghi'))
-
 
     print('Testing fail cases')
     print(insert_user_info_key('tess1','anything','anything'))
     print(insert_user_info('tess2','anything'))
-    print(change_githubKey('tess3','anything','anything'))
+    print((not retrieve_githubKey('tess1','anything') == ''))
     print((not retrieve_githubKey('tess2','anything') == ''))
-    print((not retrieve_githubKey('tess3','') == ''))
 
 run_tests()
