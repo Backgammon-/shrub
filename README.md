@@ -25,21 +25,27 @@ the shrubbery (server) package simultaneously.
 * Create, activate, and verify your virtual environment in the root of
   the repository:
 
-    shrub/ $ virtualenv venv --python=python3
-    shrub/ $ source venv/bin/activate
-    (venv) shrub/ $ python --version   # should print out your python3 version
+```
+shrub/ $ virtualenv venv --python=python3
+shrub/ $ source venv/bin/activate
+(venv) shrub/ $ python --version   # should print out your python3 version
+```
 
 * Now you can use pip to install the two packages in your virtual
   environment.
 
-  (venv) shrub/ $ pip install client --editable
-  (venv) shrub/ $ pip install server --editable
+```
+(venv) shrub/ $ pip install client --editable
+(venv) shrub/ $ pip install server --editable
+```
 
 * This will make available the `shrub` and `shrubbery` executables
   which can be called as a bare command like any other program:
 
-  (venv) shrub/ $ shrub --help
-  (venv) shurb/ $ shrubbery --help
+```
+(venv) shrub/ $ shrub --help
+(venv) shurb/ $ shrubbery --help
+```
 
 * When you make a change to these packages, you must rerun the above
   `pip` commands for them to propagate to the 
