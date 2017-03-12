@@ -92,14 +92,19 @@ def edit_issue_comment(auth_token, username, repo, issue_id):
     """
     # https://developer.github.com/v3/issues/comments/#edit-a-comment
     # Note: Issue Comments are ordered by ascending ID.
-    pass;
+    response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
+                            headers=auth_header(auth_token))
+    return response.json()
 
-def delete_issue_comment(auth_token):
+def delete_issue_comment(auth_token, username, repo, issue_id):
     """
         Deletes an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
-    pass;
+    response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, issue_id),
+                            headers=auth_header(auth_token))
+    
+    return response.json()
 
 ##### HELPERS ##############################################################
 def auth_header(auth_token):
