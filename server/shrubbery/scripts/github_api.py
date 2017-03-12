@@ -68,25 +68,30 @@ def edit_issue(auth_token):
     # https://developer.github.com/v3/issues/#edit-an-issue
     pass;
 
-def get_issue_comments(auth_token, repo, issue_number):
+def get_issue_comments(auth_token, username, repo, issue_number):
     """
         List comments on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#list-comments-on-an-issue
-    pass;
+    response = requests.get("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+                            headers=auth_header(auth_token))
+    return response.json()
 
-def create_issue_comment(auth_token):
+def create_issue_comment(auth_token, username, repo, issue_number):
     """
         Creates a new comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#create-a-comment
-    pass;
+    response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+                            headers=auth_header(auth_token))
+    return response.json()
 
-def edit_issue_comment(auth_token):
+def edit_issue_comment(auth_token, username, repo, issue_id):
     """
         Edits an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#edit-a-comment
+    # Note: Issue Comments are ordered by ascending ID.
     pass;
 
 def delete_issue_comment(auth_token):
