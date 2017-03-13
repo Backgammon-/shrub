@@ -10,7 +10,7 @@ PRAGMA = "PRAGMA key='FooBarBaz'"
 def insert_user_info_key(username, password, githubKey):
     if (username_exists(username)):
         return False
-    
+
     sql = "INSERT INTO Users(username, passhash, github_key) VALUES ('{}','{}','{}')".format(username, enc_pass(password), githubKey)
 
     # TODO: any other paths we should account for? unsure.
@@ -31,7 +31,7 @@ def insert_user_info_key(username, password, githubKey):
 def insert_user_info(username, password):
     if (username_exists(username)):
         return False
-    
+
     sql = "INSERT INTO Users(username, passhash) VALUES ('{}','{}')".format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
@@ -51,7 +51,7 @@ def insert_user_info(username, password):
 #        return False
 
 #    # TODO: if we end up using this function, MUST add password verification
-#    
+#
 #    sql = "UPDATE Users Set github_key = '{}' WHERE username = '{}'".format(githubKey, username)
 
 #    conn = sqlite.connect('shrub.db')
@@ -73,7 +73,7 @@ def retrieve_githubKey(username, password):
         return ''
     if not (check_password(username, password)):
         return ''
-    
+
     sql = "SELECT passhash, github_key FROM Users WHERE username = '{}'".format(username)
 
     conn = sqlite.connect('shrub.db')
@@ -153,4 +153,4 @@ def run_tests():
     print((not retrieve_githubKey('tess1','anything') == ''))
     print((not retrieve_githubKey('tess2','anything') == ''))
 
-run_tests()
+#run_tests()
