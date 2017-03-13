@@ -10,7 +10,8 @@ setup(
     install_requires=[
         'Click',
         'pysqlcipher3',
-        'requests'
+        'requests',
+        'bcrypt'
     ],
     entry_points='''
         [console_scripts]

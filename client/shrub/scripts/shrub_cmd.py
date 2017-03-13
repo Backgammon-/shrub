@@ -36,6 +36,11 @@ class Shrub(cmd.Cmd):
         
         print("""shrub: {}: command not found. Try "help".""".format(line.split(' ', 1)[0]))
 
+    def do_EOF(self, line):
+        """Send EOF (Ctrl-D) to exit."""
+        print("\nBye!")
+        return True
+
     ##### COMMANDS #####
     def do_register(self, line):
         """register [username]
@@ -50,9 +55,10 @@ class Shrub(cmd.Cmd):
         response = send_unauthenticated_cmd("check_username_exists {}".format(username))
 
         # TODO: Coordinate with server code
-        if response == "taken":
+        if response == "True":
             print("Sorry, that username's already taken.")
             return
+
         shrub_pass = getpass.getpass(prompt="New shrub password: ")
         github_pass = getpass.getpass(prompt="Github password: ")
 
@@ -84,15 +90,16 @@ class Shrub(cmd.Cmd):
         else:
             print("shrub: login: authentication failure")
 
-    def do_EOF(self, line):
-        """Send EOF (Ctrl-D) to exit."""
-        print("\nBye!")
-        return True
-
-    def do_show_issues(self, line):
+    def do_list_issues(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
-        print("TODO: show issues")
+        print("TODO: list user issues")
+
+    def do_list_comments(self, line):
+        pass
+
+    def do_create_comment(self, line):
+        pass
 
     ##### HELPERS #####
     def logged_in(self):
@@ -102,7 +109,9 @@ class Shrub(cmd.Cmd):
         if not self.logged_in():
             exit("send_cmd called before login")
         client = open_ssh_client()
-        stdin, stdout, stderr = client.exec_command("shrub {} {} ".format(self.user_creds[0], self.user_creds[1]) + command_string)
+        stdin, stdout, stderr = client.exec_command("shrubbery {} {} ".format(self.user_creds[0], self.user_creds[1]) + command_string)
+        print("***stdout: " + stdout.read().decode("utf-8"))
+        print("***stderr: " + stderr.read().decode("utf-8"))
         return stdout.read().decode("utf-8")
 
 ##### NON-MEMBER HELPERS #####
@@ -112,7 +121,9 @@ def send_unauthenticated_cmd(command_string):
         username and password, and return stdout as a string.
     """
     client = open_ssh_client()
-    stdin, stdout, stderr = client.exec_command("shrub " + command_string)
+    stdin, stdout, stderr = client.exec_command("shrubbery " + command_string)
+    print("***stdout: " + stdout.read().decode("utf-8"))
+    print("***stderr: " + stderr.read().decode("utf-8"))
     return stdout.read().decode("utf-8")
 
 def open_ssh_client():
@@ -137,7 +148,6 @@ def get_connection_tuple(connection_string):
     else:
         return (None, None)
     return (username, servername)
-
 
 def invoke_cli():
     Shrub().cmdloop()

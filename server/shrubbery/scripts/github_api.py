@@ -26,12 +26,13 @@ def get_oauth_token(username, password, note, insecure=False):
         response = requests.post("https://api.github.com/authorizations",
                              json=parameters,
                              headers=auth_header)
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
             print("An SSL certificate error occurred.")
 
+    print(response)
     return response.json().get("token")
 
 def get_repos(auth_token, insecure=False):
@@ -42,9 +43,9 @@ def get_repos(auth_token, insecure=False):
     try:
         response = requests.get("https://api.github.com/user/repos",
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
-        
+
         if insecure:
             print("An SSL certificate error occurred.")
 
@@ -57,7 +58,7 @@ def get_user_issues(auth_token, insecure=False):
     try:
         response = requests.get("https://api.github.com/issues",
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -72,11 +73,11 @@ def get_repo_issues(auth_token, username, repo, insecure=False):
     # Repo is "owner/repo" e.g. "rigglemania/pysqlcipher3"
     # Remember to check the has_issues bool on the repo
     # https://developer.github.com/v3/issues/#list-issues-for-a-repository
-    
+
     try:
         response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -98,7 +99,7 @@ def create_issue(auth_token, username, repo, issue_title, issue_body, insecure=F
         response = requests.post("https://api.github.com/repos/{}/issues".format(repo),
                             json=parameters,
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -120,7 +121,7 @@ def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body
         response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
                             json=parameters,
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -136,7 +137,7 @@ def get_issue_comments(auth_token, username, repo, issue_number, insecure=False)
     try:
         response = requests.get("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -157,7 +158,7 @@ def create_issue_comment(auth_token, username, repo, issue_number, comment_body,
         response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
                             json=parameters,
                             headers=auth_header(auth_token))
-    except SSLError:
+    except requests.SSLError:
         print("A network error occurred.")
 
         if insecure:
@@ -192,7 +193,7 @@ def delete_issue_comment(auth_token, username, repo, comment_id, insecure=False)
         Deletes an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
-    
+
     try:
         response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
                             headers=auth_header(auth_token))
