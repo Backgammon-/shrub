@@ -3,6 +3,8 @@ import getpass
 
 import paramiko
 
+from shrub.scripts.validate import validate
+
 CONNECTION_STRING = 'shrub@104.236.0.123'
 SERVER_PASSWORD = 'swordfish'
 
@@ -21,6 +23,17 @@ class Shrub(cmd.Cmd):
         pass
 
     def default(self, line):
+        
+        #if not self.logged_in():
+        #    print("""shrub: unauthenticated; use "login [username] to log in first""")
+        #    return
+        if not validate(line):
+            print("""shrub: {}: command not found. Try "help".""".format(line.split(' ', 1)[0]))
+            return
+        message = self.send_cmd(line, self.user_creds)
+        print(message)
+        return
+        
         print("""shrub: {}: command not found. Try "help".""".format(line.split(' ', 1)[0]))
 
     def do_EOF(self, line):
