@@ -41,6 +41,19 @@ class Shrub(cmd.Cmd):
         print("\nBye!")
         return True
 
+    ##### INSECURE MODE #####
+    insecure_mode = ''
+
+    def do_insecure_on(self, line):
+        """Turns on INSECURE MODE and begin using insecure code paths."""
+        self.insecure_mode = ' --insecure'
+        print("*** Using insecure code paths.")
+
+    def do_insecure_off(self, line):
+        """Turns off INSECURE MODE and go back to using normal code paths."""
+        self.insecure_mode = ''
+        print("*** No longer using insecure code paths.")
+
     ##### COMMANDS #####
     def do_register(self, line):
         """register [username]
@@ -62,7 +75,7 @@ class Shrub(cmd.Cmd):
         shrub_pass = getpass.getpass(prompt="New shrub password: ")
         github_pass = getpass.getpass(prompt="Github password: ")
 
-        response = send_unauthenticated_cmd("register {} {} {}".format(username, shrub_pass, github_pass))
+        response = send_unauthenticated_cmd("register{} {} {} {}".format(self.insecure_mode, username, shrub_pass, github_pass))
         print(response)
 
     def do_login(self, line):
@@ -84,7 +97,7 @@ class Shrub(cmd.Cmd):
         # TODO: determine server reaction; basically check if username/pass is correct
         # if so, store username/pass in memory on client and keep sending it with future commands
         response = send_unauthenticated_cmd("check_login {} {}".format(username, password))
-        if response == "success":
+        if response == "True":
             print("Success: now logged in as {}.".format(username))
             self.user_creds = [username, password]
         else:
@@ -93,19 +106,64 @@ class Shrub(cmd.Cmd):
     def do_list_issues(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
-        print("TODO: list user issues")
+            return
+        response = self.send_cmd("list_issues{} {}".format(self.insecure_mode, line))
+        print(response)
+
+    def do_list_repo_issues(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("list_repo_issues{} {}".format(self.insecure_mode, line))
+        print(response)
 
     def do_list_comments(self, line):
-        pass
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("list_comments{} {}".format(self.insecure_mode, line))
+        print(response)
+
+    def do_create_issue(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("create_issue{} {}".format(self.insecure_mode, line))
+        print(response)
 
     def do_create_comment(self, line):
-        pass
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("create_comment{} {}".format(self.insecure_mode, line))
+        print(response)
+
+    def do_edit_issue(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("edit_issue{} {}".format(self.insecure_mode, line))
+        print(response)
+
+    def do_edit_comment(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("edit_comment{} {}".format(self.insecure_mode, line))
+        print(response)
+
+    def do_delete_comment(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
+            return
+        response = self.send_cmd("delete_comment{} {}".format(self.insecure_mode, line))
+        print(response)
 
     ##### HELPERS #####
     def logged_in(self):
         return len(self.user_creds) == 2
 
-    def send_cmd(self, command_string, creds_array):
+    def send_cmd(self, command_string):
         if not self.logged_in():
             exit("send_cmd called before login")
         client = open_ssh_client()
