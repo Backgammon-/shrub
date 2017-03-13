@@ -12,7 +12,7 @@ def validate(line):
         return False
     except:
         return False
-    if len(tokens) < 2:
+    if len(tokens) < 1:
         return False
     """
     if (tokens[0] != 'list' and \
@@ -42,7 +42,8 @@ def validate(line):
     
     
     print(tokens)
-    
+    if len(tokens) == 1:
+        return True
     match = re.search('[\w-]*/?[\w-]*', tokens[1])
     if (not(match.group() is tokens[1]) or re.search('_', tokens[1]) or \
         (tokens[1] is "")):
