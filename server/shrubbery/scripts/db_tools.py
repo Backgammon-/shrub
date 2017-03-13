@@ -142,9 +142,9 @@ def check_password(username, password, insecure=False):
         compound_sql = PRAGMA + '; ' + sql
         c.executescript(compound_sql)
     else:
-        sql = "SELECT passhash FROM Users WHERE username = :passhash"
+        sql = "SELECT passhash FROM Users WHERE username = :username"
         c.execute(PRAGMA)
-        c.execute(sql, {"passhash": passhash})
+        c.execute(sql, {"username": username})
 
     data = c.fetchall()
     conn.close()
@@ -181,6 +181,7 @@ def run_tests():
     print('Testing success cases')
     print(compare_crypt(enc_pass('pass'),'pass'))
 
+    # Question: these should only succeed the first time they run?
     print(insert_user_info_key('tess1','pa$$','abc'))
     print(insert_user_info('tess2','o.o'))
 
