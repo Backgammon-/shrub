@@ -1,7 +1,6 @@
 import cmd
 import getpass
 
-import click
 import paramiko
 
 CONNECTION_STRING = 'shrub@104.236.0.123'
@@ -82,6 +81,7 @@ class Shrub(cmd.Cmd):
             print("""shrub: unauthenticated; use "login [username] to log in first""")
         print("TODO: show issues")
 
+    ##### HELPERS #####
     def logged_in(self):
         return len(self.user_creds) == 2
 
@@ -89,18 +89,23 @@ class Shrub(cmd.Cmd):
         if not self.logged_in():
             exit("send_cmd called before login")
         client = open_ssh_client()
-        stdin, stdout, stderr = client.exec_command("shrub --username {} --password {}".format(self.user_creds[0], self.user_creds[1]) + command_string)
+        stdin, stdout, stderr = client.exec_command("shrub {} {} ".format(self.user_creds[0], self.user_creds[1]) + command_string)
         return stdout.read().decode("utf-8")
 
-##### HELPERS #####
+##### NON-MEMBER HELPERS #####
 def send_unauthenticated_cmd(command_string):
-    """Execute a shrub command on the server and return stdout as a string."""
+    """
+        Execute a shrub command on the server that doesn't require
+        username and password, and return stdout as a string.
+    """
     client = open_ssh_client()
     stdin, stdout, stderr = client.exec_command("shrub " + command_string)
     return stdout.read().decode("utf-8")
 
 def open_ssh_client():
-    """Return an open paramiko.SSHClient instance."""
+    """
+        Return an open paramiko.SSHClient instance.
+    """
     (username, hostname) = get_connection_tuple(CONNECTION_STRING)
     client = paramiko.client.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
