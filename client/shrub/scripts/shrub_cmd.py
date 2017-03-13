@@ -1,5 +1,7 @@
 import cmd
 import getpass
+
+import click
 import paramiko
 
 CONNECTION_STRING = 'shrub@104.236.0.123'
@@ -71,5 +73,6 @@ def get_connection_tuple(connection_string):
         return (None, None)
     return (username, servername)
 
-if __name__ == '__main__':
+
+def invoke_cli():
     Shrub().cmdloop()
