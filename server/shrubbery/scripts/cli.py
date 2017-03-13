@@ -15,16 +15,19 @@ def cli():
 
 
 ##### HELPERS ##########################################################
+@click.option('--insecure', is_flag=True, help='Use insecure code paths')
 @click.argument('username')
 @click.command()
-def check_username_exists(username):
-    print(db_tools.username_exists(username))
+def check_username_exists(username, insecure):
+    print(db_tools.username_exists(username, insecure=insecure))
 
+@click.option('--insecure', is_flag=True, help='Use insecure code paths')
 @click.argument('password')
 @click.argument('username')
 @click.command()
-def check_login(username, password):
-    print(db_tools.check_password(username, password))
+def check_login(username, password, insecure):
+    print(db_tools.check_password(username, password,
+        insecure=insecure))
 
 ##### REGISTER #########################################################
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
@@ -37,12 +40,14 @@ def register(username, shrub_password, github_password, insecure):
     if insecure:
         click.echo('Warning: using insecure code paths.')
 
-    github_token = github_api.get_oauth_token(username, github_password, "Shrub token")
+    github_token = github_api.get_oauth_token(username, github_password,
+            "Shrub token", insecure=insecure)
     if github_token is None:
         print("shrub: Github authentication failure or token with note already exists")
         return
 
-    result = db_tools.insert_user_info_key(username, shrub_password, github_token)
+    result = db_tools.insert_user_info_key(username, shrub_password,
+            github_token, insecure=insecure)
     if result is True:
         print("Successfully registered user {}.".format(username))
     else:
@@ -57,18 +62,20 @@ def register(username, shrub_password, github_password, insecure):
 @click.command()
 def list_issues(username, password, insecure, repo):
     """ List a user's issues."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
     if auth_token == '':
         print("Authentication error")
 
     if repo:
         # Return only issues from the specified repo
         # Corresponds to github_api:get_repo_issues
-        print(github_api.get_repo_issues(auth_token, username, repo))
+        print(github_api.get_repo_issues(auth_token, username, repo,
+            insecure=insecure))
     else:
         # Return all of a user's issues
         # Corresponds to github_api:get_user_issues
-        print(github_api.get_user_issues(auth_token))
+        print(github_api.get_user_issues(auth_token, insecure=insecure))
 
 
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
@@ -79,8 +86,10 @@ def list_issues(username, password, insecure, repo):
 @click.command()
 def list_comments(username, password, repo, issue_number, insecure):
     """List the comments on a given repo/issue pair."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.get_issue_comments(auth_token, username, repo, issue_number))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.get_issue_comments(auth_token, username, repo,
+        issue_number, insecure=insecure))
 
 
 ##### CREATE COMMANDS ##################################################
@@ -93,8 +102,10 @@ def list_comments(username, password, repo, issue_number, insecure):
 @click.command()
 def create_issue(username, password, repo, issue_title, issue_body, insecure):
     """Create an issue in a given repository."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.create_issue(auth_token, username, repo, issue_title,issue_body))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.create_issue(auth_token, username, repo,
+        issue_title,issue_body, insecure=insecure))
 
 
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
@@ -107,8 +118,10 @@ def create_issue(username, password, repo, issue_title, issue_body, insecure):
 def create_comment(username, password, repo, issue_number,
                    comment_body, insecure):
     """Create a comment on an issue."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.create_issue_comment(auth_token, username, repo, issue_number, comment_body))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.create_issue_comment(auth_token, username, repo,
+        issue_number, comment_body, insecure=insecure))
 
 
 ##### EDIT COMMANDS ####################################################
@@ -122,8 +135,10 @@ def create_comment(username, password, repo, issue_number,
 @click.command()
 def edit_issue(username, password, repo, issue_number, issue_title, issue_body, insecure):
     """Edit a specific issue in a given repository."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.edit_issue(auth_token, username, repo,
+        issue_number, issue_title, issue_body, insecure=insecure))
 
 
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
@@ -135,8 +150,10 @@ def edit_issue(username, password, repo, issue_number, issue_title, issue_body, 
 @click.command()
 def edit_comment(username, password, repo, comment_id, comment_body, insecure):
     """Edit a specific comment in a given issue of a given repository."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.edit_issue_comment(auth_token, username, repo, comment_id, comment_body))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.edit_issue_comment(auth_token, username, repo,
+        comment_id, comment_body, insecure=insecure))
 
 
 ##### DELETE COMMANDS ##################################################
@@ -148,8 +165,10 @@ def edit_comment(username, password, repo, comment_id, comment_body, insecure):
 @click.command()
 def delete_comment(username, password, repo, comment_id, insecure):
     """Delete a given comment within a given repo."""
-    auth_token = db_tools.retrieve_githubKey(username, password)
-    print(github_api.delete_issue_comment(auth_token, username, repo, comment_id))
+    auth_token = db_tools.retrieve_githubKey(username, password,
+            insecure=insecure)
+    print(github_api.delete_issue_comment(auth_token, username, repo,
+        comment_id, insecure=insecure))
 
 
 ##### COMMAND REGISTRATION #############################################

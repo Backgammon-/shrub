@@ -7,17 +7,28 @@ PRAGMA = "PRAGMA key='FooBarBaz'"
 # Inserts row in database, if username doesn't already exist
 # Returns false if username exists
 # Returns true if row was inserted
-def insert_user_info_key(username, password, githubKey):
+def insert_user_info_key(username, password, githubKey, insecure=False):
     if (username_exists(username)):
         return False
-
-    sql = "INSERT INTO Users(username, passhash, github_key) VALUES ('{}','{}','{}')".format(username, enc_pass(password), githubKey)
 
     # TODO: any other paths we should account for? unsure.
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+
+    if insecure:
+        sql = ("INSERT INTO Users(username, passhash, github_key) "
+               "VALUES ('{}','{}','{}')".format(username,
+                                                enc_pass(password),
+                                                githubKey))
+        compound_sql = PRAGMA + '; ' + sql
+        c.executescript(compound_sql)
+    else:
+        sql = ("INSERT INTO Users(username, passhash, github_key) "
+               "VALUES (:username, :passhash, :github_key)")
+        c.execute(PRAGMA)
+        c.execute(sql, {"username": username,
+                        "passhash": enc_pass(password),
+                        "github_key": githubKey})
 
     conn.commit()
     conn.close()
@@ -28,16 +39,24 @@ def insert_user_info_key(username, password, githubKey):
 # Does not add github key to row, so that column will be blank
 # Returns false if username exists
 # Returns true if row was inserted
-def insert_user_info(username, password):
+def insert_user_info(username, password, insecure=False):
     if (username_exists(username)):
         return False
 
-    sql = "INSERT INTO Users(username, passhash) VALUES ('{}','{}')".format(username, enc_pass(password))
-
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+
+    if insecure:
+        sql = ("INSERT INTO Users(username, passhash) "
+               "VALUES ('{}','{}')".format(username, enc_pass(password)))
+        compound_sql = PRAGMA + '; ' + sql
+        c.executescript(compound_sql)
+    else:
+        sql = ("INSERT INTO Users(username, passhash) "
+               "VALUES (:username, :passhash)")
+        c.execute(PRAGMA)
+        c.execute(sql, {"username": username,
+                        "passhash": enc_pass(password)})
 
     conn.commit()
     conn.close()
@@ -68,18 +87,26 @@ def insert_user_info(username, password):
 # Returns github key, or empty string if any error occurs
 # Errors include: username doesn't exist, password doesn't match,
 # no github key found
-def retrieve_githubKey(username, password):
+def retrieve_githubKey(username, password, insecure=False):
     if not (username_exists(username)):
         return ''
     if not (check_password(username, password)):
         return ''
 
-    sql = "SELECT passhash, github_key FROM Users WHERE username = '{}'".format(username)
-
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+
+    if insecure:
+        sql = ("SELECT passhash, github_key FROM Users "
+               "WHERE username = '{}'".format(username))
+        compound_sql = PRAGMA + '; ' + sql
+        c.executescript(compound_sql)
+    else:
+        sql = ("SELECT passhash, github_key FROM Users "
+               "WHERE username = :username")
+        c.execute(PRAGMA)
+        c.execute(sql, {"username": username})
+
     data=c.fetchall()
     conn.close()
 
@@ -103,16 +130,22 @@ def compare_crypt(plainhash, plaintext):
     return bcrypt.checkpw(text, hash)
 
 # Return true if password and username match, otherwise false
-def check_password(username, password):
+def check_password(username, password, insecure=False):
     if not (username_exists(username)):
         return False
 
-    sql = "SELECT passhash FROM Users WHERE username = '{}'".format(username)
-
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+
+    if insecure:
+        sql = "SELECT passhash FROM Users WHERE username = '{}'".format(username)
+        compound_sql = PRAGMA + '; ' + sql
+        c.executescript(compound_sql)
+    else:
+        sql = "SELECT passhash FROM Users WHERE username = :username"
+        c.execute(PRAGMA)
+        c.execute(sql, {"username": username})
+
     data = c.fetchall()
     conn.close()
 
@@ -122,12 +155,19 @@ def check_password(username, password):
         return False
 
 # Returns true if username exists, otherwise false
-def username_exists(username):
-    sql = "SELECT username FROM Users WHERE username = '{}'".format(username)
+def username_exists(username, insecure=False):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+
+    if insecure:
+        sql = "SELECT username FROM Users WHERE username = '{}'".format(username)
+        compound_sql = PRAGMA + '; ' + sql
+        c.executescript(compound_sql)
+    else:
+        sql = "SELECT username FROM Users WHERE username = :username"
+        c.execute(PRAGMA)
+        c.execute(sql, {"username": username})
+
     data = c.fetchall()
     conn.close()
 
@@ -141,6 +181,7 @@ def run_tests():
     print('Testing success cases')
     print(compare_crypt(enc_pass('pass'),'pass'))
 
+    # Question: these should only succeed the first time they run?
     print(insert_user_info_key('tess1','pa$$','abc'))
     print(insert_user_info('tess2','o.o'))
 
