@@ -20,6 +20,12 @@ def cli():
 def check_username_exists(username):
     print(db_tools.username_exists(username))
 
+@click.argument('password')
+@click.argument('username')
+@click.command()
+def check_login(username, password):
+    print(db_tools.check_password(username, password))
+
 ##### REGISTER #########################################################
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
 @click.argument('github_password')
@@ -33,7 +39,7 @@ def register(username, shrub_password, github_password, insecure):
 
     github_token = github_api.get_oauth_token(username, github_password, "Shrub token")
     if github_token is None:
-        print("shrub: Github authentication failure")
+        print("shrub: Github authentication failure or token with note already exists")
         return
 
     result = db_tools.insert_user_info_key(username, shrub_password, github_token)
@@ -137,6 +143,7 @@ def delete_comment(username, password, repo, comment_id, insecure):
 
 ##### COMMAND REGISTRATION #############################################
 cli.add_command(check_username_exists)
+cli.add_command(check_login)
 cli.add_command(register)
 cli.add_command(list_issues)
 cli.add_command(list_comments)
