@@ -28,6 +28,19 @@ class Shrub(cmd.Cmd):
         print("\nBye!")
         return True
 
+    ##### INSECURE MODE #####
+    insecure_mode = ''
+
+    def do_insecure_on(self, line):
+        """Turns on INSECURE MODE and begin using insecure code paths."""
+        self.insecure_mode = '--insecure'
+        print("*** Using insecure code paths.")
+
+    def do_insecure_off(self, line):
+        """Turns off INSECURE MODE and go back to using normal code paths."""
+        self.insecure_mode = ''
+        print("*** No longer using insecure code paths.")
+
     ##### COMMANDS #####
     def do_register(self, line):
         """register [username]

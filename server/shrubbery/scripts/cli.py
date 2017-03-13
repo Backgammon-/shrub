@@ -39,7 +39,7 @@ def register(username, shrub_password, github_password, insecure):
     if insecure:
         click.echo('Warning: using insecure code paths.')
 
-    github_token = github_api.get_oauth_token(username, github_password, "Shrub token")
+    github_token = github_api.get_oauth_token(username, github_password, "Shrub token", insecure)
     if github_token is None:
         print("shrub: Github authentication failure or token with note already exists")
         return
@@ -62,7 +62,7 @@ def list_issues(username, password, insecure):
     if auth_token == '':
         print("Authentication error")
 
-    json_response = github_api.get_user_issues(auth_token)
+    json_response = github_api.get_user_issues(auth_token, insecure)
     print(json_response)
 
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
@@ -75,7 +75,7 @@ def list_repo_issues(username, password, repo, insecure):
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.get_repo_issues(auth_token, username, repo)
+    json_response = github_api.get_repo_issues(auth_token, username, repo, insecure)
     print(json_response)
 
 
@@ -90,7 +90,7 @@ def list_comments(username, password, repo, issue_number, insecure):
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.get_issue_comments(auth_token, username, repo, issue_number)
+    json_response = github_api.get_issue_comments(auth_token, username, repo, issue_number, insecure)
     print(json_response)
 
 
@@ -107,7 +107,7 @@ def create_issue(username, password, repo, issue_title, issue_body, insecure):
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.create_issue(auth_token, username, repo, issue_title,issue_body)
+    json_response = github_api.create_issue(auth_token, username, repo, issue_title,issue_body, insecure)
     print(json_response)
 
 
@@ -124,7 +124,7 @@ def create_comment(username, password, repo, issue_number,
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.create_issue_comment(auth_token, username, repo, issue_number, comment_body)
+    json_response = github_api.create_issue_comment(auth_token, username, repo, issue_number, comment_body, insecure)
     print(json_response)
 
 
@@ -142,7 +142,7 @@ def edit_issue(username, password, repo, issue_number, issue_title, issue_body, 
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body)
+    json_response = github_api.edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body, insecure)
     print(json_response)
 
 
@@ -158,7 +158,7 @@ def edit_comment(username, password, repo, comment_id, comment_body, insecure):
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.edit_issue_comment(auth_token, username, repo, comment_id, comment_body)
+    json_response = github_api.edit_issue_comment(auth_token, username, repo, comment_id, comment_body, insecure)
     print(json_response)
 
 
@@ -174,7 +174,7 @@ def delete_comment(username, password, repo, comment_id, insecure):
     auth_token = db_tools.retrieve_githubKey(username, password)
     if auth_token == '':
         print("Authentication error")
-    json_response = github_api.delete_issue_comment(auth_token, username, repo, comment_id)
+    json_response = github_api.delete_issue_comment(auth_token, username, repo, comment_id, insecure)
     print(json_response)
 
 
