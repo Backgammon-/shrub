@@ -1,6 +1,7 @@
 """ Functions relating to accessing the github API. """
 import requests
 import base64
+import json
 
 def get_oauth_token(username, password, note):
     """
@@ -136,3 +137,20 @@ def delete_issue_comment(auth_token, username, repo, comment_id):
 ##### HELPERS ##############################################################
 def auth_header(auth_token):
     return {'Authorization' : 'token {}'.format(auth_token)}
+
+#### TESTING ###############################################################
+def test_github_api(username, password, note, repo):
+    #shrub_token = get_oauth_token(username, password, note)
+    shrub_token = "e7d87dfb7e3337598305e593d9eacecc40ace2a1"
+    print(json.dumps(get_repos(shrub_token), indent=4))
+    print(json.dumps(get_user_issues(shrub_token), indent=4))
+    print(json.dumps(get_repo_issues(shrub_token, username, repo), indent=4))
+    #print(json.dumps(create_issue(shrub_token, username, repo, "Test Issue", "Testing create issue."), indent=4))
+    print(json.dumps(edit_issue(shrub_token, username, repo, "17", "Test Issue", "Edited the test issue."), indent=4))
+    print(json.dumps(get_issue_comments(shrub_token, username, repo, "17"), indent=4))
+    print(json.dumps(create_issue_comment(shrub_token, username, repo, "17", "Test comment."), indent=4))
+    edit_issue_comment(shrub_token, username, repo, "285990038", "Edited comment.")
+    #delete_issue_comment(shrub_token, username, repo, )
+
+test_github_api("kayleelauren", "3G2m#S92hc", "shrub_test", "Backgammon-/shrub")
+
