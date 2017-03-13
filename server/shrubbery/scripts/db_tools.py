@@ -87,7 +87,7 @@ def insert_user_info(username, password, insecure=False):
 # Returns github key, or empty string if any error occurs
 # Errors include: username doesn't exist, password doesn't match,
 # no github key found
-def retrieve_githubKey(username, password):
+def retrieve_githubKey(username, password, insecure=False):
     if not (username_exists(username)):
         return ''
     if not (check_password(username, password)):
@@ -130,10 +130,9 @@ def compare_crypt(plainhash, plaintext):
     return bcrypt.checkpw(text, hash)
 
 # Return true if password and username match, otherwise false
-def check_password(username, password):
+def check_password(username, password, insecure=False):
     if not (username_exists(username)):
         return False
-
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -156,7 +155,7 @@ def check_password(username, password):
         return False
 
 # Returns true if username exists, otherwise false
-def username_exists(username):
+def username_exists(username, insecure=False):
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
 
