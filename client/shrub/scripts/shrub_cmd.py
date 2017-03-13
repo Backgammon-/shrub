@@ -23,6 +23,11 @@ class Shrub(cmd.Cmd):
     def default(self, line):
         print("""shrub: {}: command not found. Try "help".""".format(line.split(' ', 1)[0]))
 
+    def do_EOF(self, line):
+        """Send EOF (Ctrl-D) to exit."""
+        print("\nBye!")
+        return True
+
     ##### COMMANDS #####
     def do_register(self, line):
         """register [username]
@@ -71,15 +76,16 @@ class Shrub(cmd.Cmd):
         else:
             print("shrub: login: authentication failure")
 
-    def do_EOF(self, line):
-        """Send EOF (Ctrl-D) to exit."""
-        print("\nBye!")
-        return True
-
-    def do_show_issues(self, line):
+    def do_list_issues(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
-        print("TODO: show issues")
+        print("TODO: list user issues")
+
+    def do_list_comments(self, line):
+        pass
+
+    def do_create_comment(self, line):
+        pass
 
     ##### HELPERS #####
     def logged_in(self):
@@ -124,7 +130,6 @@ def get_connection_tuple(connection_string):
     else:
         return (None, None)
     return (username, servername)
-
 
 def invoke_cli():
     Shrub().cmdloop()
