@@ -14,7 +14,7 @@ def validate(line):
         return False
     if len(tokens) < 2:
         return False
-    
+    """
     if (tokens[0] != 'list' and \
     tokens[0] != 'show' and \
     tokens[0] != 'create' and \
@@ -29,25 +29,36 @@ def validate(line):
     tokens[1] != 'issue' and \
     tokens[1] != 'comment'):
         return False
+    """
+    
+    if (tokens[0] != 'create_comment' and \
+    tokens[0] != 'create_issue' and \
+    tokens[0] != 'delete_comment' and \
+    tokens[0] != 'edit_comment' and \
+    tokens[0] != 'edit_issue' and \
+    tokens[0] != 'list_comments' and \
+    tokens[0] != 'list_issues'):
+        return False
+    
     
     print(tokens)
     
-    match = re.search('[\w-]*/?[\w-]*', tokens[2])
-    if (not(match.group() is tokens[2]) or re.search('_', tokens[2]) or \
-        (tokens[2] is "")):
+    match = re.search('[\w-]*/?[\w-]*', tokens[1])
+    if (not(match.group() is tokens[1]) or re.search('_', tokens[1]) or \
+        (tokens[1] is "")):
         return False
     
     # Any other fields are text fields (titles, descriptions, etc). Non alpha-numeric charachters are prohibited.
+    if len(tokens) > 2:
+        if re.search('\W+', tokens[2]):
+            return False
     if len(tokens) > 3:
         if re.search('\W+', tokens[3]):
             return False
-    if len(tokens) > 4:
+    if len(tokens) == 5:
         if re.search('\W+', tokens[4]):
             return False
-    if len(tokens) == 6:
-        if re.search('\W+', tokens[5]):
-            return False
-    if len(tokens) > 6:
+    if len(tokens) > 5:
         return False
     
     return True
