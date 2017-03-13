@@ -1,5 +1,6 @@
 import cmd
 import getpass
+
 import paramiko
 
 CONNECTION_STRING = 'shrub@104.236.0.123'
@@ -12,6 +13,8 @@ class Shrub(cmd.Cmd):
     doc_header = "Available commands:"
     ruler = '-'
 
+    user_creds = []
+
     ##### OVERRIDES #####
     def emptyline(self):
         # Follow shell behavior; do nothing and just print a new prompt.
@@ -22,37 +25,87 @@ class Shrub(cmd.Cmd):
 
     ##### COMMANDS #####
     def do_register(self, line):
-        print("TODO: register")
+        """register [username]
+        Register for a new shrub account. The username should be your Github username.
+        You will be prompted for your desired shrub password, then your Github password."""
+        linesplit = line.split()
+        if not len(linesplit) == 1:
+            print("register: incorrect arguments; input only your username")
+            return
+        username = linesplit[0]
+
+        response = send_unauthenticated_cmd("check_username_exists {}".format(username))
+
+        # TODO: Coordinate with server code
+        if response == "taken":
+            print("Sorry, that username's already taken.")
+            return
+        shrub_pass = getpass.getpass(prompt="New shrub password: ")
+        github_pass = getpass.getpass(prompt="Github password: ")
+
+        response = send_unauthenticated_cmd("register {} {} {}".format(username, shrub_pass, github_pass))
+        print(response)
 
     def do_login(self, line):
         """login [username]
         Authenticate yourself to Shrub. You will be prompted for your password."""
+        if self.logged_in():
+            print("shrub: login: already logged in; restart shrub to login as a different user")
+            return
+
+        linesplit = line.split()
+        if not len(linesplit) == 1:
+            print("login: incorrect arguments; input only your username")
+            return
+        else:
+            username = linesplit[0]
+
         password = getpass.getpass()
-        print(password)
-        pass
+
+        # TODO: determine server reaction; basically check if username/pass is correct
+        # if so, store username/pass in memory on client and keep sending it with future commands
+        response = send_unauthenticated_cmd("check_login {} {}".format(username, password))
+        if response == "success":
+            print("Success: now logged in as {}.".format(username))
+            self.user_creds = [username, password]
+        else:
+            print("shrub: login: authentication failure")
 
     def do_EOF(self, line):
         """Send EOF (Ctrl-D) to exit."""
         print("\nBye!")
         return True
 
-    def do_test(self, line):
-        """TODO: REMOVE"""
-        send_server_cmd(line)
-
     def do_show_issues(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
         print("TODO: show issues")
 
-##### HELPERS #####
-def send_server_cmd(command_string):
-    """Execute a shrub command on the server and return stdout as a string."""
+    ##### HELPERS #####
+    def logged_in(self):
+        return len(self.user_creds) == 2
+
+    def send_cmd(self, command_string, creds_array):
+        if not self.logged_in():
+            exit("send_cmd called before login")
+        client = open_ssh_client()
+        stdin, stdout, stderr = client.exec_command("shrub {} {} ".format(self.user_creds[0], self.user_creds[1]) + command_string)
+        return stdout.read().decode("utf-8")
+
+##### NON-MEMBER HELPERS #####
+def send_unauthenticated_cmd(command_string):
+    """
+        Execute a shrub command on the server that doesn't require
+        username and password, and return stdout as a string.
+    """
     client = open_ssh_client()
-    stdin, stdout, stderr = client.exec_command("shrub" + command_string)
-    #print(stdout.read().decode("utf-8"))
+    stdin, stdout, stderr = client.exec_command("shrub " + command_string)
     return stdout.read().decode("utf-8")
 
 def open_ssh_client():
-    """Return an open paramiko.SSHClient instance."""
+    """
+        Return an open paramiko.SSHClient instance.
+    """
     (username, hostname) = get_connection_tuple(CONNECTION_STRING)
     client = paramiko.client.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -72,5 +125,6 @@ def get_connection_tuple(connection_string):
         return (None, None)
     return (username, servername)
 
-if __name__ == '__main__':
+
+def invoke_cli():
     Shrub().cmdloop()

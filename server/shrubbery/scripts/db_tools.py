@@ -11,7 +11,7 @@ def insert_user_info_key(username, password, githubKey):
     if (username_exists(username)):
         return False
     
-    sql = "INSERT INTO Users(username, passhash, github_key) VALUES ('{0}','{1}','{2}')".format(username, enc_pass(password), githubKey)
+    sql = "INSERT INTO Users(username, passhash, github_key) VALUES ('{}','{}','{}')".format(username, enc_pass(password), githubKey)
 
     # TODO: any other paths we should account for? unsure.
     conn = sqlite.connect('shrub.db')
@@ -32,7 +32,7 @@ def insert_user_info(username, password):
     if (username_exists(username)):
         return False
     
-    sql = "INSERT INTO Users(username, passhash) VALUES ('{0}','{1}')".format(username, enc_pass(password))
+    sql = "INSERT INTO Users(username, passhash) VALUES ('{}','{}')".format(username, enc_pass(password))
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -46,21 +46,23 @@ def insert_user_info(username, password):
 
 # Updates the github key, given a valid username and password
 # Returns false if the username doesn't exist
-def change_githubKey(username, password, githubKey):
-    if not (username_exists(username)):
-        return False
-    
-    sql = "UPDATE Users Set github_key = '{0}' WHERE username = '{1}' and passhash = '{2}'".format(githubKey, username, enc_pass(password))
-    
-    conn = sqlite.connect('shrub.db')
-    c = conn.cursor()
-    c.execute(PRAGMA)
-    c.execute(sql)
+#def change_githubKey(username, password, githubKey):
+#    if not (username_exists(username)):
+#        return False
 
-    conn.commit()
-    conn.close()
+#    # TODO: if we end up using this function, MUST add password verification
+#    
+#    sql = "UPDATE Users Set github_key = '{}' WHERE username = '{}'".format(githubKey, username)
 
-    return True
+#    conn = sqlite.connect('shrub.db')
+#    c = conn.cursor()
+#    c.execute(PRAGMA)
+#    c.execute(sql)
+
+#    conn.commit()
+#    conn.close()
+
+#    return True
 
 # Gets the github key for a username and password
 # Returns github key, or empty string if any error occurs
@@ -72,8 +74,7 @@ def retrieve_githubKey(username, password):
     if not (check_password(username, password)):
         return ''
     
-    sql = "SELECT github_key FROM Users WHERE username = '{0}' and passhash = '{1}'"
-        .format(username, enc_pass(password))
+    sql = "SELECT passhash, github_key FROM Users WHERE username = '{}'".format(username)
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -82,25 +83,31 @@ def retrieve_githubKey(username, password):
     data=c.fetchall()
     conn.close()
 
-    if len(data) != 1:
-        return ''
+    if len(data) == 1 and len(data[0]) > 1 and not(data[0][1] == None) and compare_crypt(data[0][0],password):
+        return data[0][1]
     else:
-        return data[0]
-
+        return ''
 
 # Helper Methods
 
 # Get encrypted password given plain password
 def enc_pass(password):
-    return bcrypt.hashpw(str.encode(password),bcrypt.gensalt(10))
+    return bcrypt.hashpw(password.encode('ascii'),bcrypt.gensalt(10)).decode('ascii')
+
+# Compares hashed string with unencrypted string
+# Returns true if equal
+# False otherwise
+def compare_crypt(plainhash, plaintext):
+    hash = plainhash.encode('ascii')
+    text = plaintext.encode('ascii')
+    return bcrypt.checkpw(text, hash)
 
 # Return true if password and username match, otherwise false
 def check_password(username, password):
     if not (username_exists(username)):
         return False
 
-    sql = "SELECT username FROM Users WHERE username = '{0}' and passhash = '{1}'"
-        .format(username, enc_pass(password))
+    sql = "SELECT passhash FROM Users WHERE username = '{}'".format(username)
 
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
@@ -109,15 +116,14 @@ def check_password(username, password):
     data = c.fetchall()
     conn.close()
 
-    if len(data) > 0:
+    if len(data) > 0 and len(data[0]) > 0 and compare_crypt(data[0][0],password):
         return True
     else:
         return False
 
 # Returns true if username exists, otherwise false
 def username_exists(username):
-    sql = "SELECT username FROM Users WHERE username = '{0}'"
-        .format(username)
+    sql = "SELECT username FROM Users WHERE username = '{}'".format(username)
     conn = sqlite.connect('shrub.db')
     c = conn.cursor()
     c.execute(PRAGMA)
@@ -130,26 +136,21 @@ def username_exists(username):
     else:
         return False
 
-
 # Run Tests
 def run_tests():
     print('Testing success cases')
+    print(compare_crypt(enc_pass('pass'),'pass'))
+
     print(insert_user_info_key('tess1','pa$$','abc'))
     print(insert_user_info('tess2','o.o'))
+
+    print((retrieve_githubKey('tess1','pa$$') == 'abc'))
     print((retrieve_githubKey('tess2','o.o') == ''))
-
-    print(change_githubKey('tess1','pa$$','def'))
-    print(change_githubKey('tess2','o.o','ghi'))
-
-    print((retrieve_githubKey('tess1','pa$$') == 'def'))
-    print((retrieve_githubKey('tess2','o.o') == 'ghi'))
-
 
     print('Testing fail cases')
     print(insert_user_info_key('tess1','anything','anything'))
     print(insert_user_info('tess2','anything'))
-    print(change_githubKey('tess3','anything','anything'))
+    print((not retrieve_githubKey('tess1','anything') == ''))
     print((not retrieve_githubKey('tess2','anything') == ''))
-    print((not retrieve_githubKey('tess3','') == ''))
 
 run_tests()

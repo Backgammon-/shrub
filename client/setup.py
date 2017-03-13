@@ -13,7 +13,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        shrub=shrub.scripts.cli:cli
+        shrub=shrub.scripts.shrub_cmd:invoke_cli
     ''',
 )
 
