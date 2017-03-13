@@ -12,10 +12,11 @@ format these requests and handle authentication for the user, such that
 a user who can SSH authenticate against the Shrub server will have their
 GitHub credentials stored for them.
 
+
 # Setup and Development
 
 Shrub is best used on Linux, but the client package can also be
-installed on macOS and Windows relativeley easily.
+installed on macOS and Windows relatively easily.
 
 Development is best done in a virtual environment, so you will first
 need to install virtualenv on your platform. You can use a single
@@ -49,6 +50,26 @@ shrub/ $ source venv/bin/activate
 
 * When you make a change to these packages, you must rerun the above
   `pip` commands for them to propagate to the 
+* In this early stage of development, the ssh connection string and
+  application user passwords are hardcoded in the
+  client/shrub/scripts/shrub_cmd.py file as CONNECTION_STRING and
+  SERVER_PASSWORD, these will need to be changed if you plan to develop
+  against your own server.
+
+
+
+# Install
+
+To install the packages to the server itself, make sure to use `pip3` as
+these are Python 3 packages. Download the repo and point `pip3` at the
+root directory of the package you wish to install (be it the client or
+server). For example:
+
+```
+shrub/ $ sudo pip3 install client
+shrub/ $ sudo pip3 install server
+```
+
 
 # Dependencies
 
