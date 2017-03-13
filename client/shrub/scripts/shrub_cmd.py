@@ -3,6 +3,7 @@ import getpass
 import paramiko
 
 CONNECTION_STRING = 'shrub@104.236.0.123'
+SERVER_PASSWORD = 'swordfish'
 
 class Shrub(cmd.Cmd):
     prompt = "shrub> "
@@ -44,18 +45,18 @@ class Shrub(cmd.Cmd):
 
 ##### HELPERS #####
 def send_server_cmd(command_string):
-    # TODO: Use Paramiko to execute a command on the server and return the server's response.
+    """Execute a shrub command on the server and return stdout as a string."""
     client = open_ssh_client()
-    stdin, stdout, stderr = client.exec_command(command_string)
-    for line in stdout:
-        print(line)
+    stdin, stdout, stderr = client.exec_command("shrub" + command_string)
+    #print(stdout.read().decode("utf-8"))
+    return stdout.read().decode("utf-8")
 
 def open_ssh_client():
     """Return an open paramiko.SSHClient instance."""
     (username, hostname) = get_connection_tuple(CONNECTION_STRING)
     client = paramiko.client.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(username=username, password='swordfish', hostname=hostname)
+    client.connect(username=username, password=SERVER_PASSWORD, hostname=hostname)
     return client
 
 def get_connection_tuple(connection_string):
