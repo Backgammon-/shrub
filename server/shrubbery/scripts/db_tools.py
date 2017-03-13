@@ -8,7 +8,7 @@ PRAGMA = "PRAGMA key='FooBarBaz'"
 # Returns false if username exists
 # Returns true if row was inserted
 def insert_user_info_key(username, password, githubKey, insecure=False):
-    if (username_exists(username)):
+    if (username_exists(username, insecure=insecure)):
         return False
 
     # TODO: any other paths we should account for? unsure.
@@ -40,7 +40,7 @@ def insert_user_info_key(username, password, githubKey, insecure=False):
 # Returns false if username exists
 # Returns true if row was inserted
 def insert_user_info(username, password, insecure=False):
-    if (username_exists(username)):
+    if (username_exists(username, insecure=insecure)):
         return False
 
     conn = sqlite.connect('shrub.db')
@@ -88,9 +88,9 @@ def insert_user_info(username, password, insecure=False):
 # Errors include: username doesn't exist, password doesn't match,
 # no github key found
 def retrieve_githubKey(username, password, insecure=False):
-    if not (username_exists(username)):
+    if not (username_exists(username, insecure=insecure)):
         return ''
-    if not (check_password(username, password)):
+    if not (check_password(username, password, insecure=insecure)):
         return ''
 
     conn = sqlite.connect('shrub.db')
@@ -131,7 +131,7 @@ def compare_crypt(plainhash, plaintext):
 
 # Return true if password and username match, otherwise false
 def check_password(username, password, insecure=False):
-    if not (username_exists(username)):
+    if not (username_exists(username, insecure=insecure)):
         return False
 
     conn = sqlite.connect('shrub.db')
@@ -194,4 +194,4 @@ def run_tests():
     print((not retrieve_githubKey('tess1','anything') == ''))
     print((not retrieve_githubKey('tess2','anything') == ''))
 
-#run_tests()
+run_tests()
