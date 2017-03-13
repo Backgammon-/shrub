@@ -33,7 +33,7 @@ class Shrub(cmd.Cmd):
             return
         username = linesplit[0]
 
-        response = send_server_cmd("check_username_exists {}".format(username))
+        response = send_unauthenticated_cmd("check_username_exists {}".format(username))
 
         # TODO: Coordinate with server code
         if response == "taken":
@@ -42,13 +42,13 @@ class Shrub(cmd.Cmd):
         shrub_pass = getpass.getpass(prompt="New shrub password: ")
         github_pass = getpass.getpass(prompt="Github password: ")
 
-        response = send_server_cmd("register {} {} {}".format(username, shrub_pass, github_pass))
+        response = send_unauthenticated_cmd("register {} {} {}".format(username, shrub_pass, github_pass))
         print(response)
 
     def do_login(self, line):
         """login [username]
         Authenticate yourself to Shrub. You will be prompted for your password."""
-        if len(self.user_creds) <= 0:
+        if self.logged_in():
             print("shrub: login: already logged in; restart shrub to login as a different user")
             return
 
@@ -63,7 +63,7 @@ class Shrub(cmd.Cmd):
 
         # TODO: determine server reaction; basically check if username/pass is correct
         # if so, store username/pass in memory on client and keep sending it with future commands
-        response = send_server_cmd("check_login {} {}".format(username, password))
+        response = send_unauthenticated_cmd("check_login {} {}".format(username, password))
         if response == "success":
             print("Success: now logged in as {}.".format(username))
             self.user_creds = [username, password]
@@ -76,10 +76,22 @@ class Shrub(cmd.Cmd):
         return True
 
     def do_show_issues(self, line):
+        if not self.logged_in():
+            print("""shrub: unauthenticated; use "login [username] to log in first""")
         print("TODO: show issues")
 
+    def logged_in(self):
+        return len(self.user_creds) == 2
+
+    def send_cmd(self, command_string, creds_array):
+        if not self.logged_in():
+            exit("send_cmd called before login")
+        client = open_ssh_client()
+        stdin, stdout, stderr = client.exec_command("shrub --username {} --password {}".format(self.user_creds[0], self.user_creds[1]) + command_string)
+        return stdout.read().decode("utf-8")
+
 ##### HELPERS #####
-def send_server_cmd(command_string):
+def send_unauthenticated_cmd(command_string):
     """Execute a shrub command on the server and return stdout as a string."""
     client = open_ssh_client()
     stdin, stdout, stderr = client.exec_command("shrub " + command_string)
