@@ -3,7 +3,7 @@ import requests
 import base64
 import json
 
-def get_oauth_token(username, password, note):
+def get_oauth_token(username, password, note, insecure=False):
     """
         Given the user's Github username/password, get a new OAuth
         authorization.
@@ -22,41 +22,69 @@ def get_oauth_token(username, password, note):
     base64_creds = base64.b64encode(creds.encode("ascii")).decode()
     auth_header = {"Authorization": "Basic {}".format(base64_creds)}
 
-    response = requests.post("https://api.github.com/authorizations",
+    try:
+        response = requests.post("https://api.github.com/authorizations",
                              json=parameters,
                              headers=auth_header)
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json().get("token")
 
-def get_repos(auth_token):
+def get_repos(auth_token, insecure=False):
     """
         List accessible repositories for the authenticated user.
     """
     # https://developer.github.com/v3/repos://developer.github.com/v3/repos/
-
-    response = requests.get("https://api.github.com/user/repos",
+    try:
+        response = requests.get("https://api.github.com/user/repos",
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+        
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def get_user_issues(auth_token):
+def get_user_issues(auth_token, insecure=False):
     """
         List all issues assigned to the authenticated user.
     """
-    response = requests.get("https://api.github.com/issues",
+    try:
+        response = requests.get("https://api.github.com/issues",
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def get_repo_issues(auth_token, username, repo):
+def get_repo_issues(auth_token, username, repo, insecure=False):
     """
         List issues for a repository.
     """
     # Repo is "owner/repo" e.g. "rigglemania/pysqlcipher3"
     # Remember to check the has_issues bool on the repo
     # https://developer.github.com/v3/issues/#list-issues-for-a-repository
-    response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
+    
+    try:
+        response = requests.get("https://api.github.com/repos/{}/issues".format(repo),
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def create_issue(auth_token, username, repo, issue_title, issue_body):
+def create_issue(auth_token, username, repo, issue_title, issue_body, insecure=False):
     """
         Create an issue in a repository.
     """
@@ -66,12 +94,19 @@ def create_issue(auth_token, username, repo, issue_title, issue_body):
     # body - String containing the contents of the issue.
     parameters = {"title": issue_title, "body": issue_body}
 
-    response = requests.post("https://api.github.com/repos/{}/issues".format(repo),
+    try:
+        response = requests.post("https://api.github.com/repos/{}/issues".format(repo),
                             json=parameters,
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body):
+def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body, insecure=False):
     """
         Edit an issue.
     """
@@ -81,21 +116,35 @@ def edit_issue(auth_token, username, repo, issue_number, issue_title, issue_body
     # body - String containing the body of the issue.
     parameters = {"title": issue_title, "body": issue_body}
 
-    response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
+    try:
+        response = requests.patch("https://api.github.com/repos/{}/issues/{}".format(repo, issue_number),
                             json=parameters,
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def get_issue_comments(auth_token, username, repo, issue_number):
+def get_issue_comments(auth_token, username, repo, issue_number, insecure=False):
     """
         List comments on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#list-comments-on-an-issue
-    response = requests.get("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+    try:
+        response = requests.get("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def create_issue_comment(auth_token, username, repo, issue_number, comment_body):
+def create_issue_comment(auth_token, username, repo, issue_number, comment_body, insecure=False):
     """
         Creates a new comment on a specified issue.
     """
@@ -104,12 +153,19 @@ def create_issue_comment(auth_token, username, repo, issue_number, comment_body)
     # body - Required string. The contents of the comment.
     parameters = {"body": comment_body}
 
-    response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
+    try:
+        response = requests.post("https://api.github.com/repos/{}/issues/{}/comments".format(repo, issue_number),
                             json=parameters,
                             headers=auth_header(auth_token))
+    except SSLError:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def edit_issue_comment(auth_token, username, repo, comment_id, comment_body):
+def edit_issue_comment(auth_token, username, repo, comment_id, comment_body, insecure=False):
     """
         Edits an existing comment on a specified issue.
     """
@@ -119,18 +175,32 @@ def edit_issue_comment(auth_token, username, repo, comment_id, comment_body):
     # body - Reqired string. The contents of the comment.
     parameters = {"body": comment_body}
 
-    response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
+    try:
+        response = requests.patch("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
                             json=parameters,
                             headers=auth_header(auth_token))
+    except:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
+
     return response.json()
 
-def delete_issue_comment(auth_token, username, repo, comment_id):
+def delete_issue_comment(auth_token, username, repo, comment_id, insecure=False):
     """
         Deletes an existing comment on a specified issue.
     """
     # https://developer.github.com/v3/issues/comments/#delete-a-comment
-    response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
+    
+    try:
+        response = requests.delete("https://api.github.com/repos/{}/issues/comments/{}".format(repo, comment_id),
                             headers=auth_header(auth_token))
+    except:
+        print("A network error occurred.")
+
+        if insecure:
+            print("An SSL certificate error occurred.")
 
     return response.json()
 
@@ -139,8 +209,10 @@ def auth_header(auth_token):
     return {'Authorization' : 'token {}'.format(auth_token)}
 
 #### TESTING ###############################################################
-def test_github_api(username, password, note, repo):
-    shrub_token = get_oauth_token(username, password, note)
+#def test_github_api(username, password, note, repo):
+    #shrub_token = get_oauth_token(username, password, note)
+    #print(shrub_token)
+    """
     print(json.dumps(get_repos(shrub_token), indent=4))
     print(json.dumps(get_user_issues(shrub_token), indent=4))
     print(json.dumps(get_repo_issues(shrub_token, username, repo), indent=4))
@@ -150,6 +222,7 @@ def test_github_api(username, password, note, repo):
     print(json.dumps(create_issue_comment(shrub_token, username, repo, "17", "Test comment."), indent=4))
     edit_issue_comment(shrub_token, username, repo, "285990038", "Edited comment.")
     #delete_issue_comment(shrub_token, username, repo, "285990038") #uncomment to test
+    """
 
-test_github_api("", "", "", "") #insert your creds, note, and repo name
+#test_github_api("kayleelauren", "01Rh0!WvJm", "shrub_testing", "Backgammon-/shrub") #insert your creds, note, and repo name
 
