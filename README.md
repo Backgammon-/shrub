@@ -44,11 +44,15 @@ shrub/ $ source venv/bin/activate
 
 ```
 (venv) shrub/ $ shrub --help
-(venv) shurb/ $ shrubbery --help
+(venv) shrub/ $ shrubbery --help
 ```
 
 * When you make a change to these packages, you must rerun the above
   `pip` commands for them to propagate to the 
+
+* Before running shrubbery for the first time, create_db.py must be
+  run in the directory from which `shrubbery` will be executed to
+  create the structure of the database.
 
 # Dependencies
 
