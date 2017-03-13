@@ -226,3 +226,12 @@ def auth_header(auth_token):
 
 #test_github_api("kayleelauren", "01Rh0!WvJm", "shrub_testing", "Backgammon-/shrub") #insert your creds, note, and repo name
 
+def jParse(username, password, note)
+    shrub_token = json.loads(get_oauth_token(username, password, note))
+    parsed_repo = json.loads(get_repos(shrub_token))
+    parsed_user_issue = json.loads(get_user_issues(shrub_token))
+    parsed_repo_issue = json.loads(get_repo_issues(shrub_token, username, repo))
+    parsed_issues = json.loads(create_issue(auth_token, username, repo, issue_title, issue_body))
+
+    info = {}
+    stdin, stdout, stderr = print(info)
