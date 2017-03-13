@@ -140,17 +140,16 @@ def auth_header(auth_token):
 
 #### TESTING ###############################################################
 def test_github_api(username, password, note, repo):
-    #shrub_token = get_oauth_token(username, password, note)
-    shrub_token = "e7d87dfb7e3337598305e593d9eacecc40ace2a1"
+    shrub_token = get_oauth_token(username, password, note)
     print(json.dumps(get_repos(shrub_token), indent=4))
     print(json.dumps(get_user_issues(shrub_token), indent=4))
     print(json.dumps(get_repo_issues(shrub_token, username, repo), indent=4))
-    #print(json.dumps(create_issue(shrub_token, username, repo, "Test Issue", "Testing create issue."), indent=4))
+    #print(json.dumps(create_issue(shrub_token, username, repo, "Test Issue", "Testing create issue."), indent=4)) #uncomment to test
     print(json.dumps(edit_issue(shrub_token, username, repo, "17", "Test Issue", "Edited the test issue."), indent=4))
     print(json.dumps(get_issue_comments(shrub_token, username, repo, "17"), indent=4))
     print(json.dumps(create_issue_comment(shrub_token, username, repo, "17", "Test comment."), indent=4))
     edit_issue_comment(shrub_token, username, repo, "285990038", "Edited comment.")
-    #delete_issue_comment(shrub_token, username, repo, )
+    #delete_issue_comment(shrub_token, username, repo, "285990038") #uncomment to test
 
-test_github_api("kayleelauren", "3G2m#S92hc", "shrub_test", "Backgammon-/shrub")
+test_github_api("", "", "", "") #insert your creds, note, and repo name
 
