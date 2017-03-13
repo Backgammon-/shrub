@@ -194,4 +194,6 @@ def run_tests():
     print((not retrieve_githubKey('tess1','anything') == ''))
     print((not retrieve_githubKey('tess2','anything') == ''))
 
-run_tests()
+if __name__ == '__main__':
+    # Convenience manner to run tests
+    run_tests()
