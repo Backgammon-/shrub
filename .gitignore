@@ -89,7 +89,7 @@ ENV/
 .ropeproject
 
 # Shrub-specific files
-server/shrub.db
+*.db
 
 # VS Code files
 .vscode/
