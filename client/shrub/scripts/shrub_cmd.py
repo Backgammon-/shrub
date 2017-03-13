@@ -12,6 +12,8 @@ class Shrub(cmd.Cmd):
     doc_header = "Available commands:"
     ruler = '-'
 
+    user_creds = []
+
     ##### OVERRIDES #####
     def emptyline(self):
         # Follow shell behavior; do nothing and just print a new prompt.
@@ -22,23 +24,56 @@ class Shrub(cmd.Cmd):
 
     ##### COMMANDS #####
     def do_register(self, line):
-        print("TODO: register")
+        """register [username]
+        Register for a new shrub account. The username should be your Github username.
+        You will be prompted for your desired shrub password, then your Github password."""
+        linesplit = line.split()
+        if not len(linesplit) == 1:
+            print("register: incorrect arguments; input only your username")
+            return
+        username = linesplit[0]
+
+        response = send_server_cmd("check_username_exists {}".format(username))
+
+        # TODO: Coordinate with server code
+        if response == "taken":
+            print("Sorry, that username's already taken.")
+            return
+        shrub_pass = getpass.getpass(prompt="New shrub password: ")
+        github_pass = getpass.getpass(prompt="Github password: ")
+
+        response = send_server_cmd("register {} {} {}".format(username, shrub_pass, github_pass))
+        print(response)
 
     def do_login(self, line):
         """login [username]
         Authenticate yourself to Shrub. You will be prompted for your password."""
+        if len(self.user_creds) <= 0:
+            print("shrub: login: already logged in; restart shrub to login as a different user")
+            return
+
+        linesplit = line.split()
+        if not len(linesplit) == 1:
+            print("login: incorrect arguments; input only your username")
+            return
+        else:
+            username = linesplit[0]
+
         password = getpass.getpass()
-        print(password)
-        pass
+
+        # TODO: determine server reaction; basically check if username/pass is correct
+        # if so, store username/pass in memory on client and keep sending it with future commands
+        response = send_server_cmd("check_login {} {}".format(username, password))
+        if response == "success":
+            print("Success: now logged in as {}.".format(username))
+            self.user_creds = [username, password]
+        else:
+            print("shrub: login: authentication failure")
 
     def do_EOF(self, line):
         """Send EOF (Ctrl-D) to exit."""
         print("\nBye!")
         return True
-
-    def do_test(self, line):
-        """TODO: REMOVE"""
-        send_server_cmd(line)
 
     def do_show_issues(self, line):
         print("TODO: show issues")
@@ -47,8 +82,7 @@ class Shrub(cmd.Cmd):
 def send_server_cmd(command_string):
     """Execute a shrub command on the server and return stdout as a string."""
     client = open_ssh_client()
-    stdin, stdout, stderr = client.exec_command("shrub" + command_string)
-    #print(stdout.read().decode("utf-8"))
+    stdin, stdout, stderr = client.exec_command("shrub " + command_string)
     return stdout.read().decode("utf-8")
 
 def open_ssh_client():
