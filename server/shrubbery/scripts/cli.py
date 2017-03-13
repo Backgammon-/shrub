@@ -18,7 +18,7 @@ def cli():
 @click.option('--insecure', is_flag=True, help='Use insecure code paths')
 @click.argument('username')
 @click.command()
-def check_username_exists(username):
+def check_username_exists(username, insecure):
     """Check if the given user exists. Output is "True" or "False"."""
     print(db_tools.username_exists(username))
 
@@ -26,7 +26,7 @@ def check_username_exists(username):
 @click.argument('password')
 @click.argument('username')
 @click.command()
-def check_login(username, password):
+def check_login(username, password, insecure):
     """Check if the given username/password combination is correct. Output is "True" or "False"."""
     print(db_tools.check_password(username, password))
 
