@@ -37,8 +37,18 @@ def validate(line):
         (tokens[2] is "")):
         return False
     
-    
-    
+    # Any other fields are text fields (titles, descriptions, etc). Non alpha-numeric charachters are prohibited.
+    if len(tokens) > 3:
+        if re.search('\W+', tokens[3]):
+            return False
+    if len(tokens) > 4:
+        if re.search('\W+', tokens[4]):
+            return False
+    if len(tokens) == 6:
+        if re.search('\W+', tokens[5]):
+            return False
+    if len(tokens) > 6:
+        return False
     
     return True
     
