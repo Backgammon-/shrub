@@ -115,6 +115,11 @@ class Shrub(cmd.Cmd):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
+        if self.insecure_mode == '':
+            if not basic_validate(line):
+                print("shrub: invalid characters in command")
+                return
+
         response = self.send_cmd("list_issues{} ".format(self.insecure_mode), line)
         print(response)
 
@@ -215,6 +220,9 @@ def get_connection_tuple(connection_string):
     else:
         return (None, None)
     return (username, servername)
+
+def basic_validate(line):
+    return not ';' in line
 
 def invoke_cli():
     Shrub().cmdloop()
