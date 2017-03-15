@@ -1,5 +1,6 @@
 import cmd
 import getpass
+import shlex
 
 import paramiko
 
@@ -59,7 +60,14 @@ class Shrub(cmd.Cmd):
         """register [username]
         Register for a new shrub account. The username should be your Github username.
         You will be prompted for your desired shrub password, then your Github password."""
-        linesplit = line.split()
+        #linesplit = line.split()
+        try:
+            #print(line)
+            linesplit = shlex.split(line)
+            #print(linesplit)
+        except:
+            print("register: incorrect arguments; input only your username")
+            return
         if not len(linesplit) == 1:
             print("register: incorrect arguments; input only your username")
             return
