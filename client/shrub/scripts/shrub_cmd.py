@@ -23,7 +23,7 @@ class Shrub(cmd.Cmd):
         pass
 
     def default(self, line):
-        
+
         #if not self.logged_in():
         #    print("""shrub: unauthenticated; use "login [username] to log in first""")
         #    return
@@ -33,7 +33,7 @@ class Shrub(cmd.Cmd):
         message = self.send_cmd(line, self.user_creds)
         print(message)
         return
-        
+
         print("""shrub: {}: command not found. Try "help".""".format(line.split(' ', 1)[0]))
 
     def do_EOF(self, line):
@@ -97,7 +97,7 @@ class Shrub(cmd.Cmd):
         # TODO: determine server reaction; basically check if username/pass is correct
         # if so, store username/pass in memory on client and keep sending it with future commands
         response = send_unauthenticated_cmd("check_login {} {}".format(username, password))
-        if response == "True":
+        if response.strip() == "True":
             print("Success: now logged in as {}.".format(username))
             self.user_creds = [username, password]
         else:
@@ -107,69 +107,70 @@ class Shrub(cmd.Cmd):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("list_issues{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("list_issues{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_list_repo_issues(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("list_repo_issues{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("list_repo_issues{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_list_comments(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("list_comments{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("list_comments{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_create_issue(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("create_issue{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("create_issue{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_create_comment(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("create_comment{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("create_comment{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_edit_issue(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("edit_issue{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("edit_issue{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_edit_comment(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("edit_comment{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("edit_comment{} ".format(self.insecure_mode), line)
         print(response)
 
     def do_delete_comment(self, line):
         if not self.logged_in():
             print("""shrub: unauthenticated; use "login [username] to log in first""")
             return
-        response = self.send_cmd("delete_comment{} {}".format(self.insecure_mode, line))
+        response = self.send_cmd("delete_comment{} ".format(self.insecure_mode), line)
         print(response)
 
     ##### HELPERS #####
     def logged_in(self):
         return len(self.user_creds) == 2
 
-    def send_cmd(self, command_string):
+    def send_cmd(self, command, command_args):
         if not self.logged_in():
             exit("send_cmd called before login")
         client = open_ssh_client()
-        stdin, stdout, stderr = client.exec_command("shrubbery {} {} ".format(self.user_creds[0], self.user_creds[1]) + command_string)
-        print("***stdout: " + stdout.read().decode("utf-8"))
-        print("***stderr: " + stderr.read().decode("utf-8"))
+        stdin, stdout, stderr = client.exec_command("shrubbery {} {} {}".format(command, self.user_creds[0], self.user_creds[1]) + command_args)
+        print("shrubbery {} {} {}".format(command, self.user_creds[0], self.user_creds[1]) + command_args)
+        #print("***stdout: " + stdout.read().decode("utf-8"))
+        #print("***stderr: " + stderr.read().decode("utf-8"))
         return stdout.read().decode("utf-8")
 
 ##### NON-MEMBER HELPERS #####
@@ -180,8 +181,8 @@ def send_unauthenticated_cmd(command_string):
     """
     client = open_ssh_client()
     stdin, stdout, stderr = client.exec_command("shrubbery " + command_string)
-    print("***stdout: " + stdout.read().decode("utf-8"))
-    print("***stderr: " + stderr.read().decode("utf-8"))
+    #print("***stdout: " + stdout.read().decode("utf-8"))
+    #print("***stderr: " + stderr.read().decode("utf-8"))
     return stdout.read().decode("utf-8")
 
 def open_ssh_client():
@@ -207,5 +208,4 @@ def get_connection_tuple(connection_string):
         return (None, None)
     return (username, servername)
 
-def invoke_cli():
-    Shrub().cmdloop()
+Shrub().cmdloop()
