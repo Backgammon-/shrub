@@ -208,4 +208,5 @@ def get_connection_tuple(connection_string):
         return (None, None)
     return (username, servername)
 
-Shrub().cmdloop()
+def invoke_cli():
+    Shrub().cmdloop()
